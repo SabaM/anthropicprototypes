@@ -3693,25 +3693,46 @@ const ClaudeFolderStructure = () => (
   </div>
 );
 
-const HandoffCard = ({ onOpen }) => (
-  <div className="chat-handoff">
-    <div className="chat-handoff-head">
-      <div className="chat-handoff-icon">
-        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d97757" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2l-3 3v6l3 3h4l3-3V5l-3-3H6z"/><circle cx="8" cy="8" r="2"/></svg>
+const HandoffCard = ({ onOpen, tasksUsed = 0 }) => (
+  <div className="upsell upsell-card chat-handoff-v2">
+    <div className="upsell-card-head">
+      <div className="upsell-card-icon">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#D97757" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01M5 13v1M11 13v1"/>
+        </svg>
       </div>
-      <div className="chat-handoff-titles">
-        <div className="chat-handoff-title">Want me to actually do this for you?</div>
-        <div className="chat-handoff-sub">
-          Cowork can read each document on your computer, rename them with consistent naming, build the folder structure, and produce a summary flagging what's missing — all without you moving a single file.
+      <div className="upsell-card-titles">
+        <div className="upsell-card-title">Want me to actually organize these for you?</div>
+        <div className="upsell-card-sub">
+          Cowork can read each document, rename with consistent naming, build the folder structure, and produce a summary flagging what's missing — without you moving a single file.
         </div>
       </div>
     </div>
-    <div className="chat-handoff-foot">
-      <button className="chat-handoff-cta" onClick={onOpen}>
-        Open in Cowork
-        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
-      </button>
-      <span className="chat-handoff-meta">Free tier · 2 Cowork tasks included</span>
+    <div className="upsell-card-row">
+      <div className="upsell-card-meta">
+        <span className="upsell-meta-item">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4v4h4"/><path d="M3.5 8a5 5 0 109.3-2.5"/></svg>
+          One-time run
+        </span>
+        <span className="upsell-meta-item">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1V12a1 1 0 01-1 1H3a1 1 0 01-1-1V5z"/></svg>
+          Reads your 2025 Taxes folder
+        </span>
+        <span className="upsell-meta-item">
+          <ConnectorTag kind="drive" />
+          <ConnectorTag kind="docs" />
+          <ConnectorTag kind="files" />
+        </span>
+      </div>
+      <div className="upsell-card-actions">
+        <span className="upsell-quota-badge">
+          <strong>{tasksUsed} of 2</strong> Cowork tasks used
+        </span>
+        <button className="upsell-card-cta" onClick={onOpen}>
+          Open in Cowork
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </button>
+      </div>
     </div>
   </div>
 );
@@ -3892,7 +3913,7 @@ function App() {
                   <UserMessage>Yes please</UserMessage>
                   <ClaudeMessage>
                     <ClaudeFolderStructure />
-                    <HandoffCard onOpen={onOpenInCowork} />
+                    <HandoffCard onOpen={onOpenInCowork} tasksUsed={tasksUsed} />
                   </ClaudeMessage>
                 </>
               )}
