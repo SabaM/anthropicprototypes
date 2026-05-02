@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prototype 2 — Logged-out Experience</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: #1f1e1c;
+      color: #f5f3ee;
+      overflow: hidden;
+    }
+
+    /* Variant toggle pill */
+    #toggle {
+      position: fixed;
+      top: 14px;
+      right: 18px;
+      z-index: 99999;
+      display: inline-flex;
+      background: rgba(22, 21, 18, 0.85);
+      backdrop-filter: blur(12px);
+      border: 1px solid #2a2825;
+      border-radius: 999px;
+      padding: 3px;
+      font-size: 12px;
+      font-weight: 500;
+      box-shadow: 0 4px 16px -4px rgba(0,0,0,0.5);
+    }
+    #toggle button {
+      background: transparent;
+      border: none;
+      color: #9b958a;
+      font-family: inherit;
+      font-size: inherit;
+      font-weight: inherit;
+      padding: 6px 14px;
+      border-radius: 999px;
+      cursor: pointer;
+      transition: background 120ms ease, color 120ms ease;
+    }
+    #toggle button:hover { color: #f5f3ee; }
+    #toggle button.is-active {
+      background: #d97757;
+      color: #1f1e1c;
+    }
+    #toggle .label {
+      color: #6b6660;
+      font-size: 10.5px;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      padding: 6px 10px 6px 12px;
+      align-self: center;
+    }
+
+    #frame {
+      position: fixed;
+      inset: 0;
+      width: 100vw;
+      height: 100vh;
+      border: 0;
+      background: #1f1e1c;
+    }
+  </style>
+</head>
+<body>
+  <div id="toggle" role="tablist" aria-label="Variant">
+    <span class="label">Variant</span>
+    <button data-variant="a" type="button">A</button>
+    <button data-variant="b" type="button">B</button>
+  </div>
+
+  <iframe id="frame" title="Prototype 2 variant"></iframe>
+
+  <script>
+    const VARIANTS = {
+      a: { src: "prototype-2-a.html", isolate: null },
+      b: { src: "prototype-2-b.html", isolate: { label: "C · Marketing hero" } },
+    };
+    const STORAGE_KEY = "prototype-2-variant";
+
+    function getVariant() {
+      const saved = localStorage.getItem(STORAGE_KEY);
+      return VARIANTS[saved] ? saved : "b";
+    }
+
+    function setVariant(v) {
+      if (!VARIANTS[v]) return;
+      localStorage.setItem(STORAGE_KEY, v);
+      render(v);
+    }
+
+    function render(v) {
+      document.querySelectorAll('#toggle button').forEach(btn => {
+        btn.classList.toggle('is-active', btn.dataset.variant === v);
+        btn.setAttribute('aria-selected', btn.dataset.variant === v ? 'true' : 'false');
+      });
+      const frame = document.getElementById('frame');
+      const cfg = VARIANTS[v];
+      frame.src = "about:blank";
+      requestAnimationFrame(() => {
+        frame.src = cfg.src;
+        if (cfg.isolate) attachIsolator(frame, cfg.isolate.label);
+      });
+    }
+
+    // Watch the iframe document for the target artboard, then isolate it.
+    // The bundler swaps documentElement after unpacking, so we re-attach
+    // each time the contentDocument changes.
+    function attachIsolator(frame, label) {
+      let lastDoc = null;
+      let isolated = false;
+      const start = Date.now();
+      const tick = setInterval(() => {
+        // Give up after 30 seconds
+        if (Date.now() - start > 30000) { clearInterval(tick); return; }
+        let doc;
+        try { doc = frame.contentDocument; } catch { return; }
+        if (!doc) return;
+        if (doc !== lastDoc) { lastDoc = doc; isolated = false; }
+        if (isolated) { clearInterval(tick); return; }
+        const target = doc.querySelector(`[data-screen-label="${label}"]`);
+        if (!target) return;
+        if (isolate(doc, target)) {
+          isolated = true;
+          clearInterval(tick);
+        }
+      }, 150);
+      // Reset on iframe navigation
+      frame.addEventListener('load', () => { isolated = false; lastDoc = null; }, { once: false });
+    }
+
+    function isolate(doc, target) {
+      // Walk up from target to body, hiding all siblings at each level
+      let cur = target;
+      while (cur && cur !== doc.body && cur.parentElement) {
+        const parent = cur.parentElement;
+        for (const sib of Array.from(parent.children)) {
+          if (sib !== cur && sib.style.display !== 'none') {
+            sib.style.display = 'none';
+          }
+        }
+        // Reset transforms/positioning on ancestors so target lays out naturally
+        if (parent !== doc.body && parent !== doc.documentElement) {
+          parent.style.transform = 'none';
+          parent.style.position = 'static';
+          parent.style.left = 'auto';
+          parent.style.top = 'auto';
+          parent.style.width = 'auto';
+          parent.style.height = 'auto';
+          parent.style.minWidth = '0';
+          parent.style.minHeight = '0';
+          parent.style.padding = '0';
+          parent.style.margin = '0';
+          parent.style.background = 'transparent';
+        }
+        cur = parent;
+      }
+      // Hide the artboard chrome (label row + expand button)
+      doc.querySelectorAll('.dc-labelrow, .dc-expand').forEach(e => { e.style.display = 'none'; });
+      // Reset the artboard card chrome
+      doc.querySelectorAll('.dc-card').forEach(card => {
+        if (card.contains(target)) {
+          card.style.cssText = 'border:none;box-shadow:none;background:transparent;border-radius:0;width:100%;height:auto;overflow:visible;';
+        }
+      });
+      // Reset html/body
+      doc.documentElement.style.cssText = 'background:#1f1e1c;margin:0;padding:0;height:auto;min-height:100vh;overflow:auto;';
+      doc.body.style.cssText = 'background:#1f1e1c;margin:0;padding:0;height:auto;min-height:100vh;overflow:auto;display:block;';
+      // Make the target fill viewport width and unconstrain its height
+      target.style.cssText = `width:100vw;min-height:100vh;display:block;margin:0;padding:0;`;
+      return true;
+    }
+
+    document.querySelectorAll('#toggle button').forEach(btn => {
+      btn.addEventListener('click', () => setVariant(btn.dataset.variant));
+    });
+
+    render(getVariant());
+  </script>
+</body>
+</html>
