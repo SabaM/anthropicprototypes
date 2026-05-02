@@ -1116,31 +1116,38 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
 }
 .cw-empty-btn:hover { background:var(--accent-2); }
 
-/* ---------- v2: pulsating chat CTA ---------- */
-.cw-try-chat-btn {
-  display:inline-flex;align-items:center;gap:8px;
-  margin-top:18px;padding:8px 14px;
-  background:rgba(127,200,154,0.10);
-  border:1px solid rgba(127,200,154,0.45);
-  border-radius:999px;
-  color:#7fc89a;font-size:12.5px;font-weight:500;cursor:pointer;
-  font-family:inherit;
-  transition:background 120ms ease, border-color 120ms ease;
-}
-.cw-try-chat-btn:hover {
-  background:rgba(127,200,154,0.18);
-  border-color:rgba(127,200,154,0.7);
-}
-.cw-try-chat-pulse {
-  width:8px;height:8px;border-radius:50%;
+/* ---------- v2: sidebar Chat-icon nudge dot ---------- */
+.cd-mode-icon-wrap { position:relative;display:inline-flex;align-items:center;justify-content:center; }
+.cd-mode-nudge-dot {
+  position:absolute;top:-7px;right:-9px;
+  width:12px;height:12px;border-radius:50%;
   background:#7fc89a;
-  box-shadow:0 0 0 0 rgba(127,200,154,0.7);
-  animation:cwPulse 1.6s infinite;
+  box-shadow:
+    0 0 0 2px rgba(127,200,154,0.35),
+    0 0 0 0 rgba(127,200,154,0.85);
+  animation:cwPulse 1.1s ease-out infinite;
+  pointer-events:none;
+  z-index:2;
 }
 @keyframes cwPulse {
-  0%   { box-shadow:0 0 0 0 rgba(127,200,154,0.7); }
-  70%  { box-shadow:0 0 0 8px rgba(127,200,154,0); }
-  100% { box-shadow:0 0 0 0 rgba(127,200,154,0); }
+  0% {
+    box-shadow:
+      0 0 0 2px rgba(127,200,154,0.35),
+      0 0 0 0 rgba(127,200,154,0.85);
+    transform:scale(1);
+  }
+  70% {
+    box-shadow:
+      0 0 0 2px rgba(127,200,154,0),
+      0 0 0 16px rgba(127,200,154,0);
+    transform:scale(1.1);
+  }
+  100% {
+    box-shadow:
+      0 0 0 2px rgba(127,200,154,0),
+      0 0 0 0 rgba(127,200,154,0);
+    transform:scale(1);
+  }
 }
 
 /* ---------- v2: quota locked tint ---------- */
@@ -1347,6 +1354,67 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
   font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
   color:var(--text-3);font-weight:600;
 }
+
+/* ---------- v3: chat-hero empty state ---------- */
+.cw-tab-empty {
+  position:relative;
+  min-height:calc(100vh - 100px);
+  display:flex;flex-direction:column;justify-content:center;align-items:center;
+  padding:32px 32px 64px;
+}
+.cw-tab-quota-floater {
+  position:absolute;top:0;right:0;
+}
+.cw-tab-quota-floater .cw-tab-quota {
+  background:rgba(217,119,87,0.06);
+  border:1px solid rgba(217,119,87,0.25);
+  border-radius:12px;padding:14px 18px;
+  min-width:170px;
+}
+.cw-hero {
+  display:flex;flex-direction:column;align-items:center;
+  width:100%;max-width:680px;text-align:center;
+}
+.cw-hero-icon { margin-bottom:18px; }
+.cw-hero-h1 {
+  font-family:var(--font-serif);
+  font-size:38px;font-weight:400;letter-spacing:-0.02em;
+  color:var(--text);margin-bottom:8px;line-height:1.2;
+}
+.cw-hero-link {
+  font-size:13px;color:var(--text-3);text-decoration:underline;
+  text-decoration-color:rgba(233,231,224,0.25);
+  text-underline-offset:3px;
+  margin-bottom:28px;display:inline-block;
+}
+.cw-hero-link:hover { color:var(--text-2);text-decoration-color:var(--text-3); }
+.cw-hero-composer { width:100%; }
+.cw-composer-wrap.is-hero {
+  position:static;background:none;padding:0;margin-top:0;
+}
+.cw-composer.is-hero {
+  border-radius:18px;padding:18px 20px;
+  background:var(--bg-elev-1);
+  border-color:var(--border-strong);
+}
+.cw-composer.is-hero .cw-composer-textarea {
+  font-size:15px;padding:6px 0 8px;
+}
+.cw-composer.is-hero .cw-composer-textarea::placeholder { color:var(--text-3); }
+.cw-hero-affordance {
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:18px;
+  font-size:12px;color:var(--text-3);
+  padding:6px 12px;border-radius:999px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+}
+.cw-hero-affordance-dots { display:inline-flex;gap:4px; }
+.cw-hero-affordance-dot {
+  width:6px;height:6px;border-radius:50%;
+  background:rgba(217,119,87,0.25);
+  display:inline-block;
+}
+.cw-hero-affordance-dot.is-on { background:var(--accent); }
 
 /* Active task card */
 .cw-task {
@@ -2392,7 +2460,10 @@ const Sidebar = ({ active, onNav, mode, onMode, freeBadgeProminence, showCoworkN
       </div>
       <div className="cd-mode-toggle">
         <button className={`cd-mode ${mode === 'chat' ? 'is-on' : ''}`} onClick={() => onMode('chat')} title="Chat">
-          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h10a1 1 0 011 1v5a1 1 0 01-1 1H7l-3 2.5V11H3V5a1 1 0 011-1z"/></svg>
+          <span className="cd-mode-icon-wrap">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h10a1 1 0 011 1v5a1 1 0 01-1 1H7l-3 2.5V11H3V5a1 1 0 011-1z"/></svg>
+            {showCoworkNudge && <span className="cd-mode-nudge-dot" aria-hidden="true" />}
+          </span>
           {mode === 'chat' && <span>Chat</span>}
         </button>
         <button className={`cd-mode ${mode === 'cowork' ? 'is-on' : ''}`} onClick={() => onMode('cowork')} title="Cowork">
@@ -2863,10 +2934,64 @@ const CoworkTab = ({
 }) => {
   const locked = tasksUsed >= 2;
   const remaining = Math.max(0, 2 - tasksUsed);
+  const isEmpty = tasksUsed === 0 && completedTasks.length === 0 && !runningTask;
+
+  const quota = (
+    <div className={`cw-tab-quota ${locked ? 'is-locked' : ''}`}>
+      <div className="cw-tab-quota-num">
+        <span className="cw-tab-quota-used">{tasksUsed}</span>
+        <span className="cw-tab-quota-total">/2</span>
+      </div>
+      <div className="cw-tab-quota-label">tasks used</div>
+      <div className="cw-tab-quota-bar">
+        <div className="cw-tab-quota-fill" style={{ width: `${(tasksUsed / 2) * 100}%` }} />
+      </div>
+      <a href="#" className="cw-tab-upgrade-link">Upgrade for unlimited →</a>
+    </div>
+  );
+
+  if (isEmpty) {
+    return (
+      <div className="cw-tab cw-tab-empty">
+        <div className="cw-tab-quota-floater">{quota}</div>
+        <div className="cw-hero">
+          <div className="cw-hero-icon">
+            <svg width="40" height="40" viewBox="0 0 24 24" fill="#D97757">
+              <path d="M12 2L13.5 8.5L20 6L15.5 11L22 12L15.5 13L20 18L13.5 15.5L12 22L10.5 15.5L4 18L8.5 13L2 12L8.5 11L4 6L10.5 8.5L12 2Z"/>
+            </svg>
+          </div>
+          <h1 className="cw-hero-h1">Let's knock something off your list</h1>
+          <a href="#" className="cw-hero-link">Learn how to use Cowork safely.</a>
+
+          <div className="cw-hero-composer">
+            <CoworkComposer
+              locked={locked}
+              runningTask={runningTask}
+              pendingPrompt={pendingPrompt}
+              remaining={remaining}
+              showUpgrade={showUpgrade}
+              onSubmit={onSubmit}
+              onClearPending={onClearPending}
+              onUpgradeDismiss={onUpgradeDismiss}
+              variant="hero"
+            />
+          </div>
+
+          <div className="cw-hero-affordance">
+            <span className="cw-hero-affordance-dots">
+              <span className="cw-hero-affordance-dot is-on" />
+              <span className="cw-hero-affordance-dot is-on" />
+            </span>
+            2 free Cowork tasks to spend
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   const sectionStatus =
     locked ? '2 of 2 used · locked'
-    : tasksUsed === 1 ? '1 of 2 used · 1 task remaining'
-    : '0 of 2 used · 2 tasks remaining';
+    : '1 of 2 used · 1 task remaining';
 
   return (
     <div className="cw-tab">
@@ -2883,26 +3008,8 @@ const CoworkTab = ({
           <p className="cw-tab-lead">
             Hand off recurring work to Claude — research, summaries, digests, drafts, or anything else you'd rather not do by hand. Run it once for free, then schedule it to run on its own.
           </p>
-
-          {tasksUsed === 0 && !runningTask && !pendingPrompt && (
-            <button className="cw-try-chat-btn" onClick={onGoToChat}>
-              <span className="cw-try-chat-pulse" />
-              Try the chat first to see how a Cowork starts →
-            </button>
-          )}
         </div>
-
-        <div className={`cw-tab-quota ${locked ? 'is-locked' : ''}`}>
-          <div className="cw-tab-quota-num">
-            <span className="cw-tab-quota-used">{tasksUsed}</span>
-            <span className="cw-tab-quota-total">/2</span>
-          </div>
-          <div className="cw-tab-quota-label">tasks used</div>
-          <div className="cw-tab-quota-bar">
-            <div className="cw-tab-quota-fill" style={{ width: `${(tasksUsed / 2) * 100}%` }} />
-          </div>
-          <a href="#" className="cw-tab-upgrade-link">Upgrade for unlimited →</a>
-        </div>
+        {quota}
       </div>
 
       <div className="cw-tab-section">
@@ -2911,26 +3018,12 @@ const CoworkTab = ({
           <span className="cw-tab-section-count">{sectionStatus}</span>
         </div>
 
-        {completedTasks.length === 0 && !runningTask ? (
-          <div className="cw-empty">
-            <div className="cw-empty-icon">
-              <svg width="36" height="36" viewBox="0 0 16 16" fill="none" stroke="rgba(217,119,87,.7)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
-                <rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01M5 13v1M11 13v1"/>
-              </svg>
-            </div>
-            <div className="cw-empty-title">No Cowork tasks yet</div>
-            <div className="cw-empty-sub">
-              Hand off recurring work below — or start in <strong>Chat</strong> to see the full handoff flow.
-            </div>
-          </div>
-        ) : (
-          <div className="cw-task-list">
-            {runningTask && <TaskCard task={runningTask} state="running" />}
-            {completedTasks.map((t, i) => (
-              <TaskCard key={t.id} task={t} state="completed" locked={locked} index={i} />
-            ))}
-          </div>
-        )}
+        <div className="cw-task-list">
+          {runningTask && <TaskCard task={runningTask} state="running" />}
+          {completedTasks.map((t, i) => (
+            <TaskCard key={t.id} task={t} state="completed" locked={locked} index={i} />
+          ))}
+        </div>
       </div>
 
       <CoworkComposer
@@ -3440,7 +3533,8 @@ const TaskCard = ({ task, state, locked, index }) => {
   );
 };
 
-const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpgrade, onSubmit, onClearPending, onUpgradeDismiss }) => {
+const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpgrade, onSubmit, onClearPending, onUpgradeDismiss, variant }) => {
+  const isHero = variant === 'hero';
   const [text, setText] = React.useState('');
   const fromChat = !!pendingPrompt;
 
@@ -3464,7 +3558,7 @@ const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpg
   const showStarterChips = !locked && !text && !runningTask;
 
   return (
-    <div className="cw-composer-wrap">
+    <div className={`cw-composer-wrap ${isHero ? 'is-hero' : ''}`}>
       {showUpgrade && (
         <div className="cw-upgrade-card">
           <div className="cw-upgrade-card-body">
@@ -3500,14 +3594,14 @@ const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpg
         </div>
       )}
 
-      <div className={`cw-composer ${locked ? 'is-locked' : ''}`}>
+      <div className={`cw-composer ${locked ? 'is-locked' : ''} ${isHero ? 'is-hero' : ''}`}>
         <textarea
           className="cw-composer-textarea"
           value={text}
           onChange={e => setText(e.target.value)}
           onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } }}
-          placeholder={locked ? 'Upgrade to send more tasks' : 'Hand off something to Cowork…'}
-          rows={text.length > 80 ? 3 : 2}
+          placeholder={locked ? 'Upgrade to send more tasks' : (isHero ? 'How can I help you today?' : 'Hand off something to Cowork…')}
+          rows={text.length > 80 ? 3 : (isHero ? 2 : 2)}
           disabled={locked}
         />
         <div className="cw-composer-row">
@@ -3765,6 +3859,7 @@ function App() {
           else if (id === 'new') setView('chat');
         }}
         freeBadgeProminence={t.freeBadgeProminence}
+        showCoworkNudge={view === 'cowork' && tasksUsed === 0 && completedTasks.length === 0 && !runningTask && !pendingPrompt}
       />
       <main className="cd-main">
         <TopBar
