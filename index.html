@@ -1,0 +1,305 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Prototypes</title>
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    html, body { height: 100%; }
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
+      background: #1f1e1c;
+      color: #f5f3ee;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    /* ---------- Home ---------- */
+    #home {
+      height: 100vh;
+      width: 100vw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 80px 40px 40px;
+      overflow: auto;
+    }
+    #home header {
+      text-align: center;
+      margin-bottom: 56px;
+    }
+    #home h1 {
+      font-family: "Fraunces", Georgia, serif;
+      font-weight: 400;
+      font-size: 44px;
+      letter-spacing: -0.02em;
+      margin-bottom: 8px;
+    }
+    #home p.sub {
+      color: #9b958a;
+      font-size: 15px;
+    }
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(280px, 360px));
+      gap: 20px;
+      width: 100%;
+      max-width: 760px;
+    }
+    .card {
+      background: #262522;
+      border: 1px solid #353330;
+      border-radius: 16px;
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+      transition: border-color 120ms ease, transform 120ms ease;
+      min-height: 200px;
+    }
+    .card:hover { border-color: #4a4641; }
+    .card .num {
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 13px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #9b958a;
+    }
+    .card .name-input {
+      background: transparent;
+      border: none;
+      outline: none;
+      color: #f5f3ee;
+      font-family: "Fraunces", Georgia, serif;
+      font-size: 24px;
+      font-weight: 400;
+      width: 100%;
+      padding: 4px 0;
+      border-bottom: 1px dashed transparent;
+      transition: border-color 120ms ease;
+    }
+    .card .name-input:hover { border-bottom-color: #4a4641; }
+    .card .name-input:focus { border-bottom-color: #d97757; }
+    .card .name-input::placeholder { color: #6b6660; font-style: italic; }
+    .card .actions {
+      display: flex;
+      gap: 8px;
+      margin-top: auto;
+    }
+    .btn {
+      font-family: inherit;
+      font-size: 13px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      border: 1px solid #4a4641;
+      background: #2f2d2a;
+      color: #f5f3ee;
+      cursor: pointer;
+      transition: background 120ms ease, border-color 120ms ease;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .btn:hover { background: #383532; }
+    .btn.primary {
+      background: #d97757;
+      border-color: #d97757;
+      color: #1f1e1c;
+      font-weight: 500;
+    }
+    .btn.primary:hover { background: #c46647; border-color: #c46647; }
+    .btn:disabled { opacity: 0.45; cursor: not-allowed; }
+    .card .status {
+      font-size: 12px;
+      color: #6b6660;
+    }
+    .card.empty { opacity: 0.7; }
+
+    /* ---------- Viewer ---------- */
+    #viewer {
+      display: none;
+      flex-direction: column;
+      height: 100vh;
+      width: 100vw;
+      background: #1f1e1c;
+    }
+    body.viewing #home { display: none; }
+    body.viewing #viewer { display: flex; }
+    #toolbar {
+      flex: 0 0 auto;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 8px 14px;
+      background: #161512;
+      border-bottom: 1px solid #2a2825;
+      font-size: 13px;
+    }
+    #toolbar .label {
+      flex: 1 1 auto;
+      color: #9b958a;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      padding: 0 6px;
+    }
+    #toolbar .label strong { color: #f5f3ee; font-weight: 500; }
+    #toolbar .badge {
+      background: #2a2825;
+      color: #9b958a;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+    }
+    #frame-wrap { flex: 1 1 auto; position: relative; background: #1f1e1c; }
+    #frame { width: 100%; height: 100%; border: 0; display: block; background: #1f1e1c; }
+    #frame-empty {
+      position: absolute; inset: 0;
+      display: flex; align-items: center; justify-content: center;
+      color: #6b6660; font-size: 14px; text-align: center; padding: 40px;
+    }
+  </style>
+</head>
+<body>
+  <main id="home">
+    <header>
+      <h1>Prototypes</h1>
+      <p class="sub">Click a tile to open. Names are saved locally — click to rename.</p>
+    </header>
+    <div class="grid" id="grid"></div>
+  </main>
+
+  <section id="viewer">
+    <div id="toolbar">
+      <button class="btn" id="btn-home" title="Back to home (Esc)">← Home</button>
+      <button class="btn" id="btn-refresh" title="Refresh prototype (R)">↻ Refresh</button>
+      <div class="label"><span class="badge" id="vw-num"></span> <strong id="vw-name"></strong></div>
+      <button class="btn" id="btn-newtab" title="Open in new tab">↗ Open in new tab</button>
+    </div>
+    <div id="frame-wrap">
+      <iframe id="frame" title="Prototype"></iframe>
+    </div>
+  </section>
+
+  <script>
+    const PROTOTYPES = [
+      { id: 1, defaultName: "Prototype 1", file: null },
+      { id: 2, defaultName: "Prototype 2", file: null },
+      { id: 3, defaultName: "Cowork on Free Tier", file: "prototypes/prototype-3.html" },
+      { id: 4, defaultName: "Claude Rooms", file: "prototypes/prototype-4.html" },
+    ];
+    const STORAGE_KEY = "prototype-names-v1";
+
+    function loadNames() {
+      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
+      catch { return {}; }
+    }
+    function saveName(id, name) {
+      const all = loadNames();
+      if (name && name.trim()) all[id] = name.trim();
+      else delete all[id];
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+    }
+    function nameFor(p) {
+      return loadNames()[p.id] || p.defaultName;
+    }
+
+    function renderGrid() {
+      const grid = document.getElementById("grid");
+      grid.innerHTML = "";
+      const names = loadNames();
+      PROTOTYPES.forEach(p => {
+        const card = document.createElement("div");
+        card.className = "card" + (p.file ? "" : " empty");
+        const name = names[p.id] || p.defaultName;
+        card.innerHTML = `
+          <div class="num">Prototype ${p.id}</div>
+          <input class="name-input" type="text" value="${escapeHtml(name)}" placeholder="${escapeHtml(p.defaultName)}" data-id="${p.id}" />
+          <div class="actions">
+            <button class="btn primary" data-action="open" data-id="${p.id}" ${p.file ? "" : "disabled"}>Open</button>
+            ${p.file ? "" : '<span class="status">No file yet</span>'}
+          </div>
+        `;
+        grid.appendChild(card);
+      });
+
+      grid.querySelectorAll(".name-input").forEach(el => {
+        el.addEventListener("change", e => saveName(+e.target.dataset.id, e.target.value));
+        el.addEventListener("blur",   e => saveName(+e.target.dataset.id, e.target.value));
+        el.addEventListener("keydown", e => { if (e.key === "Enter") e.target.blur(); });
+      });
+      grid.querySelectorAll('[data-action="open"]').forEach(el => {
+        el.addEventListener("click", () => openPrototype(+el.dataset.id));
+      });
+    }
+
+    function escapeHtml(s) {
+      return String(s).replace(/[&<>"']/g, c => ({
+        "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"
+      }[c]));
+    }
+
+    function openPrototype(id) {
+      const p = PROTOTYPES.find(x => x.id === id);
+      if (!p || !p.file) return;
+      // Save current name first (in case of unblurred edit)
+      const input = document.querySelector(`.name-input[data-id="${id}"]`);
+      if (input) saveName(id, input.value);
+
+      document.getElementById("vw-num").textContent = `Prototype ${p.id}`;
+      document.getElementById("vw-name").textContent = nameFor(p);
+      document.getElementById("frame").src = p.file;
+      document.body.classList.add("viewing");
+      location.hash = `#p=${id}`;
+    }
+
+    function goHome() {
+      document.body.classList.remove("viewing");
+      document.getElementById("frame").src = "about:blank";
+      if (location.hash) history.replaceState(null, "", location.pathname);
+      renderGrid();
+    }
+
+    function refreshPrototype() {
+      const frame = document.getElementById("frame");
+      // Force reload by re-setting src
+      const src = frame.getAttribute("src");
+      if (!src || src === "about:blank") return;
+      frame.src = "about:blank";
+      requestAnimationFrame(() => { frame.src = src; });
+    }
+
+    document.getElementById("btn-home").addEventListener("click", goHome);
+    document.getElementById("btn-refresh").addEventListener("click", refreshPrototype);
+    document.getElementById("btn-newtab").addEventListener("click", () => {
+      const src = document.getElementById("frame").getAttribute("src");
+      if (src && src !== "about:blank") window.open(src, "_blank");
+    });
+
+    document.addEventListener("keydown", e => {
+      if (!document.body.classList.contains("viewing")) return;
+      if (e.key === "Escape") goHome();
+      else if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey && !e.altKey) {
+        // avoid hijacking when typing in an input inside the iframe (we can't see it),
+        // but the focused element here would be the toolbar/body, so this is safe.
+        if (document.activeElement === document.body) refreshPrototype();
+      }
+    });
+
+    // Restore from hash on load
+    function fromHash() {
+      const m = location.hash.match(/p=(\d+)/);
+      if (m) openPrototype(+m[1]);
+    }
+
+    renderGrid();
+    fromHash();
+    window.addEventListener("hashchange", () => {
+      const m = location.hash.match(/p=(\d+)/);
+      if (m) openPrototype(+m[1]);
+      else goHome();
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,3291 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Cowork on Free Tier — Claude desktop</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+Pro:ital,wght@0,400;0,600;1,400&family=Geist:wght@400;500;600;700&family=Geist+Mono:wght@400;500&family=Fraunces:opsz,wght@9..144,400;9..144,500;9..144,600&display=swap">
+
+<style>
+:root {
+  --bg-app: #1f1e1c;
+  --bg-sidebar: #1a1916;
+  --bg-main: #262522;
+  --bg-elev-1: #2c2b27;
+  --bg-elev-2: #34322d;
+  --bg-input: #2a2925;
+  --border: rgba(255,255,255,0.06);
+  --border-strong: rgba(255,255,255,0.10);
+  --text: #e9e7e0;
+  --text-2: rgba(233,231,224,0.72);
+  --text-3: rgba(233,231,224,0.50);
+  --text-4: rgba(233,231,224,0.32);
+  --accent: #d97757;
+  --accent-2: #c8654a;
+  --accent-soft: rgba(217,119,87,0.12);
+  --accent-border: rgba(217,119,87,0.32);
+  --green: #7fc89a;
+  --amber: #e0b96b;
+  --blue: #7aa9d9;
+  --red: #e07a6e;
+  --radius: 10px;
+  --font-ui: 'Geist', 'Söhne', -apple-system, system-ui, sans-serif;
+  --font-serif: 'Fraunces', 'Source Serif Pro', Georgia, serif;
+  --font-mono: 'Geist Mono', ui-monospace, Menlo, monospace;
+}
+
+*{box-sizing:border-box}
+html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);font-family:var(--font-ui);-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;font-size:14px}
+
+/* ============== App layout ============== */
+.app {
+  display:grid;
+  grid-template-columns: 240px 1fr;
+  height:100vh;
+  background:var(--bg-app);
+  overflow:hidden;
+}
+
+/* ============== Sidebar ============== */
+.cd-sidebar {
+  background:var(--bg-sidebar);
+  border-right:1px solid var(--border);
+  display:flex;
+  flex-direction:column;
+  padding:10px 8px;
+  min-height:0;
+}
+.cd-sb-top { padding:8px 8px 12px; }
+.cd-logo {
+  display:flex;align-items:center;gap:8px;
+  font-weight:600;font-size:15px;letter-spacing:-0.01em;
+}
+.cd-nav { display:flex;flex-direction:column;gap:1px;padding:4px 0; }
+.cd-mode-toggle {
+  display:flex;align-items:center;gap:4px;
+  padding:4px 6px 6px;
+}
+.cd-mode {
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 10px;border-radius:8px;
+  background:none;border:0;color:var(--text-3);
+  font:inherit;font-size:13px;font-weight:500;cursor:default;
+  transition:background 0.12s, color 0.12s;
+}
+.cd-mode:hover { color:var(--text);background:rgba(255,255,255,0.04); }
+.cd-mode.is-on { background:rgba(255,255,255,0.10);color:var(--text); }
+.cd-mode svg { flex-shrink:0;opacity:0.9; }
+.cd-mode-pill {
+  font-size:9px;font-weight:600;letter-spacing:0.08em;
+  padding:2px 5px;border-radius:3px;
+  background:linear-gradient(135deg, #d97757, #b45a3f);
+  color:#fff;
+  margin-left:2px;
+}
+.cd-mode-quiet {
+  margin-left:auto;
+  width:26px;height:26px;border-radius:6px;
+  background:none;border:0;color:var(--text-4);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.cd-mode-quiet:hover { background:rgba(255,255,255,0.04);color:var(--text-2); }
+.cd-nav-tag {
+  font-size:9.5px;font-weight:500;letter-spacing:0.02em;
+  padding:2px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.06);color:var(--text-3);
+}
+.cd-nav-item {
+  display:flex;align-items:center;gap:10px;
+  padding:7px 10px;border-radius:7px;
+  background:none;border:0;color:var(--text-2);
+  font:inherit;font-size:13px;text-align:left;cursor:default;width:100%;
+  transition:background 0.12s, color 0.12s;
+}
+.cd-nav-item:hover { background:rgba(255,255,255,0.04);color:var(--text); }
+.cd-nav-item.is-active { background:rgba(255,255,255,0.06);color:var(--text); }
+.cd-nav-item svg { flex-shrink:0;opacity:0.85; }
+.cd-nav-item span { flex:1; }
+.cd-nav-badge {
+  font-size:9px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;
+  background:rgba(255,255,255,0.08);color:var(--text-2);
+}
+.cd-nav-badge.is-loud {
+  background:linear-gradient(135deg, #d97757, #b45a3f);
+  color:#fff;
+  box-shadow:0 0 0 1px rgba(217,119,87,0.3), 0 4px 12px -3px rgba(217,119,87,0.45);
+}
+.cd-sb-section {
+  font-size:10.5px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-4);padding:14px 10px 6px;
+}
+.cd-sb-recent { flex:1;min-height:0;overflow-y:auto;display:flex;flex-direction:column; }
+.cd-recent {
+  text-align:left;background:none;border:0;color:var(--text-2);
+  font:inherit;font-size:12.5px;
+  padding:6px 10px;border-radius:6px;cursor:default;
+  white-space:nowrap;overflow:hidden;text-overflow:ellipsis;
+}
+.cd-recent:hover { background:rgba(255,255,255,0.03);color:var(--text); }
+.cd-recent.is-active { background:rgba(255,255,255,0.06);color:var(--text); }
+.cd-sb-bottom { border-top:1px solid var(--border);padding:10px 4px 4px;margin-top:8px; }
+.cd-user { display:flex;align-items:center;gap:10px;padding:6px 8px;border-radius:8px; }
+.cd-avatar {
+  width:28px;height:28px;border-radius:50%;
+  background:linear-gradient(135deg,#5b8def,#a86bef);
+  display:flex;align-items:center;justify-content:center;
+  font-weight:600;font-size:12px;color:#fff;flex-shrink:0;
+}
+.cd-user-meta { flex:1;min-width:0; }
+.cd-user-name { font-size:12.5px;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis; }
+.cd-user-plan { font-size:11px;color:var(--text-4); }
+.cd-upgrade {
+  font:inherit;font-size:10.5px;font-weight:500;
+  padding:4px 8px;border-radius:5px;
+  background:var(--accent-soft);color:var(--accent);
+  border:1px solid var(--accent-border);cursor:default;
+}
+.cd-upgrade:hover { background:rgba(217,119,87,0.18); }
+
+/* ============== Main pane ============== */
+.cd-main {
+  display:flex;flex-direction:column;
+  background:var(--bg-main);
+  min-height:0;min-width:0;
+  position:relative;
+}
+
+/* ============== Top bar ============== */
+.cd-topbar {
+  height:42px;flex-shrink:0;
+  display:flex;align-items:center;justify-content:space-between;
+  padding:0 16px;border-bottom:1px solid var(--border);
+}
+.cd-tb-left, .cd-tb-right { display:flex;align-items:center;gap:6px; }
+.cd-iconbtn {
+  width:28px;height:28px;border-radius:6px;
+  background:none;border:0;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.cd-iconbtn:hover { background:rgba(255,255,255,0.05);color:var(--text); }
+.cd-breadcrumb { font-size:12.5px;color:var(--text-2);margin-left:4px; }
+
+/* ============== Conversation ============== */
+.cd-content {
+  flex:1;
+  min-height:0;
+  overflow-y:auto;
+  display:flex;
+  flex-direction:column;
+}
+
+.conversation { max-width:760px;width:100%;margin:0 auto;padding:32px 32px 80px;display:flex;flex-direction:column;gap:24px; }
+
+.msg { display:flex;width:100%; }
+.msg-user { justify-content:flex-end; }
+.msg-user-bubble {
+  max-width:85%;
+  padding:14px 18px;border-radius:16px;
+  background:#34322d;
+  font-size:14.5px;line-height:1.55;
+  color:var(--text);
+}
+
+.msg-claude { gap:14px;align-items:flex-start; }
+.msg-claude-mark {
+  width:24px;height:24px;border-radius:6px;flex-shrink:0;margin-top:4px;
+  background:rgba(217,119,87,0.10);
+  display:flex;align-items:center;justify-content:center;
+}
+.msg-claude-body { flex:1;min-width:0; }
+
+/* ============== Connector row ============== */
+.connector-row {
+  display:flex;align-items:center;gap:6px;flex-wrap:wrap;
+  padding:7px 10px;border-radius:8px;
+  background:rgba(255,255,255,0.03);
+  margin-bottom:18px;
+  font-size:12px;color:var(--text-3);
+}
+.connector-row-label { font-size:11.5px;color:var(--text-4);margin-right:4px; }
+.connector-row-meta { color:var(--text-4);font-size:11.5px;margin-left:2px; }
+
+.src-chip {
+  display:inline-flex;align-items:center;gap:5px;
+  padding:2.5px 7px 2.5px 5px;
+  border-radius:5px;
+  background:rgba(255,255,255,0.05);
+  border:1px solid rgba(255,255,255,0.06);
+  font-size:11px;font-weight:500;color:var(--text-2);
+  white-space:nowrap;
+  vertical-align:baseline;
+}
+.src-chip-ico { display:flex;align-items:center; }
+
+/* ============== Todo response ============== */
+.todo-response { font-size:14.5px;line-height:1.6;color:var(--text); }
+.todo-response p { margin:0 0 16px;color:var(--text); }
+.todo-response strong { color:var(--text);font-weight:600; }
+.todo-response em { font-style:italic; }
+
+.todo-h {
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-ui);
+  font-size:16px;font-weight:600;
+  margin:24px 0 4px;letter-spacing:-0.01em;
+}
+.todo-dot {
+  width:11px;height:11px;border-radius:50%;
+  display:inline-block;flex-shrink:0;
+}
+.todo-dot-red { background:#e07a6e;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.15); }
+.todo-dot-amber { background:#e0b96b;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.15); }
+.todo-dot-blue { background:#7aa9d9;box-shadow:inset 0 0 0 2px rgba(0,0,0,0.15); }
+
+.todo-sub {
+  font-size:13.5px;color:var(--text-2);font-weight:500;
+  margin:8px 0 6px !important;
+}
+.todo-list { list-style:none;padding:0;margin:0 0 8px;display:flex;flex-direction:column;gap:10px; }
+.todo-item {
+  position:relative;
+  padding-left:18px;
+  font-size:14px;line-height:1.55;
+}
+.todo-item::before {
+  content:'';
+  position:absolute;
+  left:4px;top:9px;width:5px;height:5px;border-radius:50%;
+  background:var(--text-3);
+}
+.todo-item.is-dim { color:var(--text-3); }
+.todo-item.is-dim::before { background:var(--text-4); }
+.todo-item-text { display:inline; }
+.todo-item-srcs {
+  display:inline-flex;gap:4px;margin-left:8px;
+  vertical-align:middle;position:relative;top:-1px;
+}
+
+/* ============== Upsell variants ============== */
+.upsell { margin-top:24px; }
+
+/* Chip variant */
+.upsell-chip {
+  display:flex;align-items:center;gap:10px;flex-wrap:wrap;
+}
+.upsell-chip-btn {
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px 8px 12px;
+  border-radius:999px;
+  background:linear-gradient(180deg, rgba(217,119,87,0.14), rgba(217,119,87,0.08));
+  border:1px solid var(--accent-border);
+  color:var(--text);font:inherit;font-size:13px;font-weight:500;
+  cursor:default;
+  transition:transform 0.12s, background 0.12s;
+}
+.upsell-chip-btn:hover { background:linear-gradient(180deg, rgba(217,119,87,0.22), rgba(217,119,87,0.12));transform:translateY(-0.5px); }
+.upsell-chip-btn svg { color:var(--accent); }
+.upsell-chip-arrow { color:var(--accent);font-size:14px;margin-left:2px; }
+.upsell-free-tag {
+  font-size:10.5px;letter-spacing:0.04em;
+  padding:3px 8px;border-radius:4px;
+  background:rgba(255,255,255,0.06);
+  color:var(--text-3);
+  text-transform:lowercase;font-weight:500;
+}
+.upsell-free-tag.is-loud {
+  background:linear-gradient(135deg,#d97757,#b45a3f);
+  color:#fff;font-weight:600;
+  text-transform:uppercase;letter-spacing:0.06em;font-size:10px;
+  box-shadow:0 0 0 1px rgba(217,119,87,0.3), 0 6px 16px -3px rgba(217,119,87,0.4);
+}
+
+/* Card variant */
+.upsell-card {
+  border-radius:12px;
+  background:linear-gradient(180deg, rgba(217,119,87,0.06), rgba(217,119,87,0.02));
+  border:1px solid var(--accent-border);
+  padding:16px 18px;
+}
+.upsell-card-head { display:flex;align-items:flex-start;gap:12px;margin-bottom:14px; }
+.upsell-card-icon {
+  width:30px;height:30px;border-radius:8px;flex-shrink:0;
+  background:rgba(217,119,87,0.12);
+  display:flex;align-items:center;justify-content:center;
+}
+.upsell-card-titles { flex:1;min-width:0; }
+.upsell-card-title { font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px; }
+.upsell-card-sub { font-size:12.5px;color:var(--text-2);line-height:1.5; }
+.upsell-card-badge {
+  flex-shrink:0;
+  font-size:11px;font-weight:500;
+  padding:4px 9px;border-radius:5px;
+  background:rgba(255,255,255,0.06);
+  color:var(--text-2);
+}
+.upsell-card-badge.is-loud {
+  display:flex;align-items:center;gap:7px;
+  background:linear-gradient(135deg,#d97757,#b45a3f);
+  color:#fff;padding:6px 11px;
+  box-shadow:0 0 0 1px rgba(217,119,87,0.3), 0 8px 20px -4px rgba(217,119,87,0.4);
+}
+.upsell-card-badge-star { font-size:14px; }
+.upsell-card-badge-l1 { font-size:11px;font-weight:700;letter-spacing:0.07em;line-height:1.1; }
+.upsell-card-badge-l2 { font-size:9.5px;opacity:0.85;line-height:1.1;font-weight:500; }
+
+.upsell-card-row {
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  flex-wrap:wrap;
+}
+.upsell-card-meta { display:flex;align-items:center;gap:14px;flex-wrap:wrap;color:var(--text-3);font-size:11.5px; }
+.upsell-meta-item { display:inline-flex;align-items:center;gap:5px; }
+.upsell-meta-item svg { opacity:0.8; }
+.upsell-card-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:7px 14px;border-radius:7px;
+  background:var(--accent);color:#fff;
+  border:0;font:inherit;font-size:12.5px;font-weight:500;
+  cursor:default;
+  box-shadow:0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 12px -3px rgba(217,119,87,0.5);
+}
+.upsell-card-cta:hover { background:#cf6b48; }
+
+/* Banner variant */
+.upsell-banner {
+  display:flex;align-items:center;gap:12px;
+  padding:11px 14px;
+  border-radius:8px;
+  background:rgba(217,119,87,0.06);
+  border:1px solid var(--accent-border);
+  font-size:13px;
+}
+.upsell-banner-icon {
+  width:24px;height:24px;border-radius:6px;
+  background:rgba(217,119,87,0.15);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.upsell-banner-text { flex:1;color:var(--text-2); }
+.upsell-banner-text strong { color:var(--text); }
+.upsell-banner-pill {
+  margin-left:8px;
+  font-size:10.5px;font-weight:500;
+  padding:2px 7px;border-radius:4px;
+  background:rgba(255,255,255,0.06);
+  color:var(--text-3);
+  text-transform:lowercase;
+}
+.upsell-banner-pill.is-loud {
+  background:linear-gradient(135deg,#d97757,#b45a3f);
+  color:#fff;text-transform:uppercase;font-weight:600;letter-spacing:0.05em;font-size:10px;
+}
+.upsell-banner-cta {
+  font:inherit;font-size:12.5px;font-weight:500;color:var(--accent);
+  background:none;border:0;cursor:default;
+  padding:4px 8px;border-radius:5px;
+}
+.upsell-banner-cta:hover { background:rgba(217,119,87,0.1); }
+
+/* ============== Composer ============== */
+.composer-wrap {
+  position:sticky;bottom:0;
+  padding:0 32px 16px;background:linear-gradient(180deg, rgba(38,37,34,0) 0%, var(--bg-main) 30%);
+  max-width:760px;width:100%;margin:0 auto;
+}
+.composer {
+  background:var(--bg-input);border:1px solid var(--border-strong);
+  border-radius:14px;padding:8px 8px 6px 14px;
+}
+.composer-textarea { padding:10px 4px;color:var(--text-4);font-size:14px;min-height:44px; }
+.composer-row { display:flex;align-items:center;justify-content:space-between;gap:8px; }
+.composer-tools { display:flex;align-items:center;gap:4px; }
+.composer-tool {
+  display:inline-flex;align-items:center;gap:4px;
+  padding:5px 8px;border-radius:6px;
+  background:none;border:0;color:var(--text-3);font:inherit;font-size:12px;cursor:default;
+}
+.composer-tool:hover { background:rgba(255,255,255,0.05);color:var(--text); }
+.composer-send {
+  width:30px;height:30px;border-radius:8px;
+  background:#3a3934;border:0;color:var(--text-4);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.composer-foot { text-align:center;font-size:11px;color:var(--text-4);padding:8px 0 0; }
+
+/* ============== Setup modal ============== */
+.setup-overlay {
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:50;
+  animation:fadein 0.2s;
+}
+.setup-modal {
+  width:540px;max-width:calc(100% - 32px);
+  max-height:calc(100vh - 64px);
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  border-radius:14px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:slideup 0.25s cubic-bezier(0.2,0.8,0.2,1);
+}
+@keyframes fadein { from{opacity:0} to{opacity:1} }
+@keyframes slideup { from{transform:translateY(12px);opacity:0} to{transform:translateY(0);opacity:1} }
+
+.setup-panel-overlay {
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.4);
+  display:flex;justify-content:flex-end;
+  z-index:50;animation:fadein 0.2s;
+}
+.setup-panel {
+  width:480px;max-width:90%;height:100%;
+  background:var(--bg-elev-1);border-left:1px solid var(--border-strong);
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:slidein 0.25s cubic-bezier(0.2,0.8,0.2,1);
+  box-shadow:-12px 0 60px rgba(0,0,0,0.4);
+}
+@keyframes slidein { from{transform:translateX(20px);opacity:0} to{transform:translateX(0);opacity:1} }
+
+.setup-head {
+  display:flex;align-items:flex-start;gap:12px;
+  padding:18px 20px 14px;border-bottom:1px solid var(--border);position:relative;
+}
+.setup-head-icon {
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:rgba(217,119,87,0.12);
+  display:flex;align-items:center;justify-content:center;
+}
+.setup-title { font-size:15px;font-weight:600; }
+.setup-sub { font-size:12.5px;color:var(--text-3);margin-top:2px;line-height:1.4;max-width:380px; }
+.setup-x {
+  position:absolute;top:12px;right:12px;
+  width:26px;height:26px;border-radius:6px;
+  background:none;border:0;color:var(--text-3);font-size:18px;line-height:1;cursor:default;
+}
+.setup-x:hover { background:rgba(255,255,255,0.06);color:var(--text); }
+
+.setup-body { padding:18px 20px;flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:18px; }
+.setup-field { display:flex;flex-direction:column;gap:6px; }
+.setup-field label {
+  font-size:11px;letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--text-3);font-weight:500;
+}
+.setup-input {
+  background:var(--bg-input);border:1px solid var(--border-strong);
+  border-radius:7px;padding:8px 10px;color:var(--text);
+  font:inherit;font-size:13px;outline:none;
+}
+.setup-input:focus { border-color:var(--accent-border); }
+
+.setup-prompt {
+  background:var(--bg-input);border:1px solid var(--border);
+  border-radius:7px;padding:11px 12px;
+  font-size:12.5px;color:var(--text-2);line-height:1.55;
+  position:relative;
+}
+.setup-prompt-tag {
+  display:inline-block;
+  font-size:9.5px;letter-spacing:0.06em;text-transform:uppercase;
+  padding:2px 6px;border-radius:4px;
+  background:var(--accent-soft);color:var(--accent);
+  margin-bottom:8px;font-weight:600;
+}
+
+.setup-sources { display:flex;flex-direction:column;gap:6px; }
+.setup-source {
+  display:flex;align-items:center;gap:10px;
+  padding:7px 10px;border-radius:6px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+}
+.setup-source-status { flex:1;font-size:11.5px;color:var(--text-3); }
+
+.setup-grid { display:grid;grid-template-columns:1.4fr 1fr;gap:14px; }
+
+.setup-radio-group { display:flex;gap:4px;background:var(--bg-input);padding:3px;border-radius:8px;border:1px solid var(--border-strong); }
+.setup-radio {
+  flex:1;
+  padding:6px 10px;border-radius:5px;
+  background:none;border:0;color:var(--text-3);
+  font:inherit;font-size:12px;cursor:default;
+  transition:background 0.12s, color 0.12s;
+}
+.setup-radio:hover { color:var(--text); }
+.setup-radio.is-on { background:rgba(255,255,255,0.08);color:var(--text); }
+
+.setup-dest { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; }
+.setup-dest-opt {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 11px;border-radius:8px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  color:var(--text);font:inherit;text-align:left;cursor:default;
+  position:relative;
+}
+.setup-dest-opt.is-on { border-color:var(--accent-border);background:var(--accent-soft); }
+.setup-dest-opt.is-disabled { opacity:0.5; }
+.setup-dest-icon {
+  width:24px;height:24px;border-radius:6px;
+  background:rgba(255,255,255,0.06);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.setup-dest-l1 { font-size:12.5px;font-weight:500; }
+.setup-dest-l2 { font-size:10.5px;color:var(--text-3);margin-top:1px; }
+.setup-dest-check { position:absolute;top:7px;right:9px;color:var(--accent);font-size:13px; }
+
+.setup-quota {
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  border-radius:8px;padding:11px 12px;
+}
+.setup-quota-bar {
+  height:4px;border-radius:2px;background:rgba(255,255,255,0.08);
+  overflow:hidden;margin-bottom:8px;
+}
+.setup-quota-fill {
+  height:100%;background:linear-gradient(90deg, var(--accent), var(--accent-2));
+  border-radius:2px;
+}
+.setup-quota-text { font-size:11.5px;color:var(--text-2); }
+.setup-quota-text strong { color:var(--text); }
+.setup-quota-text a { color:var(--accent);text-decoration:none; }
+
+.setup-foot {
+  display:flex;justify-content:flex-end;gap:8px;
+  padding:12px 20px;border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.15);
+}
+.setup-secondary, .setup-primary {
+  padding:7px 14px;border-radius:7px;font:inherit;font-size:12.5px;font-weight:500;cursor:default;
+}
+.setup-secondary { background:none;border:1px solid var(--border-strong);color:var(--text-2); }
+.setup-secondary:hover { background:rgba(255,255,255,0.04);color:var(--text); }
+.setup-primary {
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);border:0;color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,0.15) inset, 0 4px 12px -3px rgba(217,119,87,0.5);
+}
+.setup-primary:hover { background:#cf6b48; }
+
+/* ============== Task modal (mirrors real "Create scheduled task") ============== */
+.task-modal {
+  width:620px;max-width:calc(100% - 32px);
+  max-height:calc(100vh - 64px);
+  background:var(--bg-elev-1);
+  border:1px solid var(--border-strong);
+  border-radius:14px;
+  box-shadow:0 24px 80px rgba(0,0,0,0.6), 0 0 0 1px rgba(255,255,255,0.04) inset;
+  display:flex;flex-direction:column;overflow:hidden;
+  animation:slideup 0.2s cubic-bezier(0.2,0.8,0.2,1);
+}
+.task-modal-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:18px 22px 14px;
+}
+.task-modal-title { font-size:17px;font-weight:600;color:var(--text);letter-spacing:-0.01em; }
+.task-modal-x {
+  width:28px;height:28px;border-radius:7px;
+  background:none;border:0;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.task-modal-x:hover { background:rgba(255,255,255,0.05);color:var(--text); }
+
+.task-modal-body {
+  padding:0 22px 8px;flex:1;overflow-y:auto;
+  display:flex;flex-direction:column;gap:16px;
+}
+.task-field { display:flex;flex-direction:column;gap:6px; }
+.task-field-narrow { max-width:200px; }
+.task-label {
+  font-size:12.5px;font-weight:500;color:var(--text);
+  letter-spacing:0;
+}
+.task-req { color:var(--accent);font-weight:500; }
+.task-input {
+  background:var(--bg-input);
+  border:1px solid var(--border-strong);
+  border-radius:8px;padding:9px 12px;color:var(--text);
+  font:inherit;font-size:13.5px;outline:none;
+  transition:border-color 0.12s;
+}
+.task-input::placeholder { color:var(--text-4); }
+.task-input:focus { border-color:var(--accent-border); }
+
+.task-prompt-shell {
+  background:var(--bg-input);
+  border:1px solid var(--border-strong);
+  border-radius:10px;
+  display:flex;flex-direction:column;
+  overflow:hidden;
+}
+.task-prompt-textarea {
+  background:none;border:0;outline:none;resize:none;
+  color:var(--text);
+  font:inherit;font-size:13.5px;line-height:1.55;
+  padding:12px 14px 8px;
+  min-height:108px;
+}
+.task-prompt-textarea::placeholder { color:var(--text-4); }
+.task-prompt-foot {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:6px 8px 8px;
+}
+.task-prompt-foot-l { display:flex;gap:2px; }
+.task-chip {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 9px;border-radius:7px;
+  background:none;border:0;color:var(--text-2);
+  font:inherit;font-size:12.5px;cursor:default;
+  transition:background 0.12s, color 0.12s;
+}
+.task-chip:hover { background:rgba(255,255,255,0.04);color:var(--text); }
+.task-chip svg { opacity:0.85; }
+.task-chip-quiet { color:var(--text-3); }
+
+.task-select-wrap { position:relative;display:inline-block; }
+.task-select {
+  background:var(--bg-input);
+  border:1px solid var(--border-strong);
+  border-radius:8px;padding:8px 30px 8px 12px;
+  color:var(--text);font:inherit;font-size:13px;
+  outline:none;cursor:default;
+  appearance:none;-webkit-appearance:none;
+  width:100%;
+}
+.task-select:focus { border-color:var(--accent-border); }
+.task-select-caret {
+  position:absolute;right:11px;top:50%;transform:translateY(-50%);
+  color:var(--text-3);pointer-events:none;
+}
+
+.task-modal-foot {
+  display:flex;justify-content:flex-end;gap:8px;
+  padding:14px 22px 18px;
+}
+.task-btn {
+  padding:8px 18px;border-radius:8px;
+  font:inherit;font-size:13px;font-weight:500;
+  cursor:default;border:0;
+  transition:background 0.12s;
+}
+.task-btn-secondary {
+  background:none;border:1px solid var(--border-strong);
+  color:var(--text);
+}
+.task-btn-secondary:hover { background:rgba(255,255,255,0.04); }
+.task-btn-primary {
+  background:var(--accent);color:#fff;
+  box-shadow:0 1px 0 rgba(255,255,255,0.15) inset;
+}
+.task-btn-primary:hover { background:#cf6b48; }
+.task-btn-primary.is-disabled {
+  background:rgba(255,255,255,0.10);
+  color:var(--text-3);
+  box-shadow:none;
+}
+.task-btn-primary.is-disabled:hover { background:rgba(255,255,255,0.10); }
+
+/* ============== Upsell quota badge ============== */
+.upsell-card-actions {
+  display:flex;align-items:center;gap:14px;
+  margin-left:auto;
+}
+.upsell-quota-badge {
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11.5px;color:var(--text-3);
+  white-space:nowrap;
+}
+.upsell-quota-badge strong { color:var(--text-2);font-weight:600; }
+.upsell-quota-badge.is-loud {
+  padding:5px 10px;border-radius:6px;
+  background:rgba(217,119,87,0.12);
+  border:1px solid var(--accent-border);
+  color:var(--accent);
+  font-size:11px;font-weight:500;letter-spacing:0.02em;
+}
+.upsell-quota-badge.is-loud strong { color:var(--accent);font-weight:600; }
+.upsell-quota-star { color:var(--accent); }
+
+/* ============== Chat-style setup ============== */
+.chat-setup {
+  position:absolute;left:50%;bottom:90px;transform:translateX(-50%);
+  width:560px;max-width:calc(100% - 64px);
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  border-radius:14px;
+  box-shadow:0 16px 60px rgba(0,0,0,0.5);
+  z-index:30;
+  animation:slideup 0.25s cubic-bezier(0.2,0.8,0.2,1);
+}
+.chat-setup-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 16px 12px;border-bottom:1px solid var(--border);
+}
+.chat-setup-head-l { display:flex;align-items:center;gap:10px; }
+.chat-setup-title { font-size:13.5px;font-weight:600; }
+.chat-setup-sub { font-size:11px;color:var(--text-3);margin-top:1px; }
+.chat-setup-body { padding:16px; }
+.chat-setup-msg { font-size:13.5px;line-height:1.55;color:var(--text);margin-bottom:14px; }
+.chat-setup-msg strong { color:var(--text);font-weight:600; }
+.chat-setup-msg em { font-style:italic;color:var(--text-2); }
+.chat-setup-options { display:flex;flex-direction:column;gap:6px; }
+.chat-setup-opt {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:10px 14px;border-radius:8px;
+  background:rgba(255,255,255,0.03);border:1px solid var(--border);
+  color:var(--text);font:inherit;font-size:13px;text-align:left;cursor:default;
+  transition:background 0.12s, border-color 0.12s, transform 0.12s;
+}
+.chat-setup-opt:not(.is-disabled):hover {
+  background:rgba(217,119,87,0.06);border-color:var(--accent-border);
+  transform:translateX(2px);
+}
+.chat-setup-opt.is-disabled { opacity:0.4; }
+.chat-setup-opt-arrow { color:var(--accent);font-size:14px; }
+
+/* ============== Cowork tab ============== */
+.cw-tab { max-width:920px;margin:0 auto;padding:32px 32px 80px;width:100%; }
+.cw-tab-head {
+  display:grid;grid-template-columns:1fr auto;gap:32px;
+  margin-bottom:36px;align-items:flex-start;
+}
+.cw-tab-titles {}
+.cw-tab-eyebrow {
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:11px;font-weight:600;letter-spacing:0.08em;
+  text-transform:uppercase;color:var(--text-3);
+  margin-bottom:14px;
+}
+.cw-tab-eyebrow-dot {
+  width:7px;height:7px;border-radius:50%;background:var(--accent);
+  box-shadow:0 0 0 3px rgba(217,119,87,0.18);
+}
+.cw-tab-eyebrow-pill {
+  font-size:9.5px;letter-spacing:0.05em;font-weight:600;
+  padding:2px 7px;border-radius:4px;
+  background:rgba(255,255,255,0.06);color:var(--text-2);
+}
+.cw-tab-eyebrow-pill.is-loud {
+  background:linear-gradient(135deg,#d97757,#b45a3f);color:#fff;
+  box-shadow:0 0 0 1px rgba(217,119,87,0.3), 0 4px 12px -3px rgba(217,119,87,0.4);
+}
+.cw-tab-h1 {
+  font-family:var(--font-serif);font-weight:500;
+  font-size:36px;line-height:1.1;letter-spacing:-0.02em;
+  margin:0 0 12px;color:var(--text);
+}
+.cw-tab-lead {
+  font-size:14.5px;line-height:1.55;color:var(--text-2);
+  max-width:560px;margin:0;
+}
+.cw-tab-quota {
+  background:linear-gradient(180deg, rgba(217,119,87,0.08), rgba(217,119,87,0.02));
+  border:1px solid var(--accent-border);
+  border-radius:12px;padding:16px 18px;
+  min-width:200px;
+}
+.cw-tab-quota-num {
+  display:flex;align-items:baseline;gap:2px;
+  font-family:var(--font-serif);
+  margin-bottom:2px;
+}
+.cw-tab-quota-used {
+  font-size:36px;font-weight:500;color:var(--accent);line-height:1;
+}
+.cw-tab-quota-total { font-size:18px;color:var(--text-3); }
+.cw-tab-quota-label { font-size:11px;letter-spacing:0.05em;text-transform:uppercase;color:var(--text-3);margin-bottom:10px; }
+.cw-tab-quota-bar { height:4px;background:rgba(255,255,255,0.06);border-radius:2px;overflow:hidden;margin-bottom:8px; }
+.cw-tab-quota-fill { height:100%;background:linear-gradient(90deg, var(--accent), var(--accent-2));border-radius:2px;transition:width 0.5s; }
+.cw-tab-upgrade-link { font-size:11.5px;color:var(--accent);text-decoration:none; }
+
+.cw-tab-section { margin-bottom:36px; }
+.cw-tab-section-head {
+  display:flex;align-items:baseline;gap:10px;
+  margin-bottom:14px;
+  padding-bottom:10px;border-bottom:1px solid var(--border);
+}
+.cw-tab-section-head h2 {
+  font-family:var(--font-ui);
+  font-size:13px;font-weight:600;letter-spacing:0.05em;text-transform:uppercase;
+  margin:0;color:var(--text-2);
+}
+.cw-tab-section-count { font-size:12px;color:var(--text-4);font-variant-numeric:tabular-nums; }
+.cw-tab-section-locked { font-size:11px;color:var(--text-4);margin-left:auto; }
+
+/* ============== Cowork landing (composer-first) ============== */
+.cw-land {
+  position:relative;
+  flex:1;
+  display:flex;
+  align-items:flex-start;
+  justify-content:center;
+  min-height:100%;
+  padding:64px 32px 80px;
+  overflow:hidden;
+}
+.cw-land-bg {
+  position:absolute;inset:0;
+  background-image: radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size: 18px 18px;
+  -webkit-mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 90%);
+          mask-image: radial-gradient(ellipse 90% 80% at 50% 40%, #000 30%, transparent 90%);
+  pointer-events:none;
+}
+.cw-land-inner {
+  position:relative;z-index:1;
+  width:100%;max-width:760px;
+  display:flex;flex-direction:column;gap:18px;
+}
+.cw-land-hero {
+  margin-bottom:6px;padding-left:2px;
+}
+.cw-land-mark {
+  margin-bottom:10px;
+}
+.cw-land-title-row { display:flex;align-items:flex-start;gap:14px; }
+.cw-land-title {
+  font-family:var(--font-serif);font-weight:500;
+  font-size:34px;line-height:1.1;letter-spacing:-0.022em;
+  margin:0 0 8px;color:var(--text);
+}
+.cw-land-mark {
+  display:inline-flex;align-items:center;justify-content:center;
+  vertical-align:middle;margin-right:14px;
+}
+.cw-land-link {
+  font-size:13px;color:var(--text-3);text-decoration:underline;
+  text-underline-offset:3px;text-decoration-color:rgba(233,231,224,0.25);
+  display:inline-block;margin-top:4px;
+}
+.cw-land-link:hover { color:var(--text-2); }
+
+.cw-land-composer-wrap {
+  position:relative;
+  display:flex;flex-direction:column;gap:8px;
+  border-radius:18px;
+}
+.cw-land-composer-wrap.is-glow {
+  padding:0;
+  box-shadow: 0 0 0 1px rgba(217,119,87,0.35), 0 0 36px -8px rgba(217,119,87,0.5);
+}
+.cw-land-composer-wrap.is-glow .cw-land-composer {
+  border-color:rgba(217,119,87,0.3);
+}
+.cw-land-composer {
+  background:rgba(42,41,37,0.7);
+  border:1px solid rgba(255,255,255,0.07);
+  border-radius:16px;
+  padding:14px 16px 10px;
+  box-shadow:0 1px 0 rgba(255,255,255,0.03) inset, 0 12px 40px -16px rgba(0,0,0,0.5);
+  backdrop-filter:blur(8px);
+}
+.cw-land-composer-input {
+  font-size:14.5px;color:var(--text-4);
+  padding:10px 4px 28px 14px;
+  position:relative;
+}
+.cw-land-composer-input::before {
+  content:'';
+  position:absolute;left:4px;top:8px;
+  width:1.5px;height:18px;
+  background:var(--text-2);
+  animation: cwCaret 1s step-end infinite;
+}
+@keyframes cwCaret { 50% { opacity:0; } }
+.cw-land-composer-row {
+  display:flex;align-items:center;gap:6px;
+  padding:4px 0 2px;
+}
+.cw-land-icon-btn {
+  width:32px;height:32px;border-radius:8px;
+  background:none;border:0;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.cw-land-icon-btn:hover { background:rgba(255,255,255,0.05);color:var(--text); }
+.cw-land-spacer { flex:1; }
+
+.cw-land-send-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:8px;
+  background:var(--accent);color:#fff;
+  border:0;font:inherit;font-size:12.5px;font-weight:600;cursor:default;
+  box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 4px 14px -4px rgba(217,119,87,0.5);
+}
+.cw-land-send-cta:hover { background:#cf6b48; }
+
+.cw-land-toolbar {
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  padding:0 4px;
+}
+.cw-land-toolbar-spacer { flex:1; }
+.cw-land-pill {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 10px;border-radius:8px;
+  background:none;border:0;color:var(--text-2);
+  font:inherit;font-size:12.5px;font-weight:500;cursor:default;
+  white-space:nowrap;
+  transition:background 0.12s, color 0.12s;
+}
+.cw-land-pill:hover { background:rgba(255,255,255,0.05);color:var(--text); }
+.cw-land-pill svg { opacity:0.85; }
+.cw-land-pill-quiet { color:var(--text-3); }
+
+/* ---- Untried treatments ---- */
+
+/* Pill in the toolbar */
+.cw-tx-pill {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:5px 10px;border-radius:8px;
+  background:rgba(217,119,87,0.10);
+  border:1px solid var(--accent-border);
+  color:var(--text-2);font-size:12px;
+  white-space:nowrap;
+}
+.cw-tx-pill strong { color:var(--accent);font-weight:600; }
+.cw-tx-pill-spark { color:var(--accent);font-size:11px; }
+
+/* Banner above composer */
+.cw-tx-banner {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 14px;border-radius:10px;
+  background:rgba(217,119,87,0.07);
+  border:1px solid var(--accent-border);
+  font-size:13px;color:var(--text-2);
+}
+.cw-tx-banner.is-warn {
+  background:linear-gradient(180deg, rgba(217,119,87,0.12), rgba(217,119,87,0.05));
+}
+.cw-tx-banner-icon {
+  width:24px;height:24px;border-radius:6px;
+  background:rgba(217,119,87,0.15);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.cw-tx-banner-icon.is-warn { background:rgba(217,119,87,0.18); }
+.cw-tx-banner-text { flex:1;line-height:1.45; }
+.cw-tx-banner-text strong { color:var(--text);font-weight:600; }
+.cw-tx-banner-link {
+  font-size:12px;color:var(--accent);text-decoration:none;font-weight:500;
+  padding:4px 8px;border-radius:5px;white-space:nowrap;
+}
+.cw-tx-banner-link:hover { background:rgba(217,119,87,0.10); }
+.cw-tx-banner-cta {
+  font:inherit;font-size:12.5px;font-weight:600;
+  padding:6px 14px;border-radius:7px;
+  background:var(--accent);border:0;color:#fff;cursor:default;
+  white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,0.18) inset;
+}
+.cw-tx-banner-cta:hover { background:#cf6b48; }
+
+/* Tooltip floating beside composer */
+.cw-tx-tooltip {
+  position:absolute;
+  bottom:62px;right:-12px;
+  transform:translateX(100%);
+  display:flex;align-items:flex-start;gap:10px;
+  padding:12px 14px;border-radius:10px;
+  background:linear-gradient(180deg, #d97757, #b45a3f);
+  color:#fff;
+  width:240px;
+  box-shadow:0 12px 32px -8px rgba(217,119,87,0.5);
+  animation: cwTipBob 2.4s ease-in-out infinite;
+}
+@keyframes cwTipBob {
+  0%, 100% { transform:translateX(100%) translateY(0); }
+  50%      { transform:translateX(100%) translateY(-3px); }
+}
+.cw-tx-tooltip-arrow {
+  position:absolute;left:-6px;top:24px;
+  width:12px;height:12px;
+  background:#d97757;
+  transform:rotate(45deg);
+}
+.cw-tx-tooltip-spark { font-size:14px;flex-shrink:0;margin-top:1px; }
+.cw-tx-tooltip-title { font-size:12.5px;font-weight:600;margin-bottom:2px; }
+.cw-tx-tooltip-sub { font-size:11.5px;color:rgba(255,255,255,0.85);line-height:1.4; }
+
+/* ---- Used-state overlay (locks composer) ---- */
+.cw-tx-overlay {
+  position:absolute;inset:0;
+  border-radius:18px;
+  background:rgba(20,19,17,0.55);
+  backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:5;
+}
+.cw-tx-overlay-card {
+  display:flex;align-items:center;gap:14px;
+  padding:14px 18px;border-radius:12px;
+  background:var(--bg-elev-1);
+  border:1px solid var(--accent-border);
+  box-shadow:0 12px 40px -8px rgba(0,0,0,0.5);
+  max-width:520px;
+}
+.cw-tx-overlay-icon {
+  width:36px;height:36px;border-radius:9px;flex-shrink:0;
+  background:rgba(217,119,87,0.12);
+  display:flex;align-items:center;justify-content:center;
+}
+.cw-tx-overlay-text { flex:1; }
+.cw-tx-overlay-title { font-size:14px;font-weight:600;color:var(--text);margin-bottom:3px; }
+.cw-tx-overlay-sub { font-size:12.5px;color:var(--text-2);line-height:1.5; }
+.cw-tx-overlay-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:8px;
+  background:var(--accent);color:#fff;
+  border:0;font:inherit;font-size:12.5px;font-weight:600;cursor:default;
+  white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 4px 14px -4px rgba(217,119,87,0.5);
+}
+.cw-tx-overlay-cta:hover { background:#cf6b48; }
+.cw-land-composer-wrap.is-locked .cw-land-composer { opacity:0.55; }
+
+/* ---- Used-state card-below ---- */
+.cw-tx-card {
+  border-radius:14px;
+  background:linear-gradient(180deg, rgba(217,119,87,0.10), rgba(217,119,87,0.04));
+  border:1px solid var(--accent-border);
+  padding:18px 20px;
+  display:flex;flex-direction:column;gap:16px;
+}
+.cw-tx-card-row { display:flex;align-items:center;gap:14px; }
+.cw-tx-card-icon {
+  width:38px;height:38px;border-radius:10px;flex-shrink:0;
+  background:rgba(217,119,87,0.12);
+  display:flex;align-items:center;justify-content:center;
+}
+.cw-tx-card-titles { flex:1; }
+.cw-tx-card-title { font-size:14.5px;font-weight:600;color:var(--text);margin-bottom:3px; }
+.cw-tx-card-sub { font-size:12.5px;color:var(--text-2);line-height:1.5; }
+.cw-tx-card-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:8px 14px;border-radius:8px;
+  background:var(--accent);color:#fff;
+  border:0;font:inherit;font-size:12.5px;font-weight:600;cursor:default;
+  white-space:nowrap;
+  box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 4px 14px -4px rgba(217,119,87,0.5);
+}
+.cw-tx-card-cta:hover { background:#cf6b48; }
+.cw-tx-card-examples {
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:8px;
+}
+.cw-tx-card-ex {
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border);
+  border-radius:8px;padding:10px 12px;
+}
+.cw-tx-card-ex-cad {
+  font-family:var(--font-mono);font-size:10px;letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;margin-bottom:4px;
+}
+.cw-tx-card-ex-title { font-size:12.5px;font-weight:600;color:var(--text);line-height:1.3; }
+
+/* ---- Active-task section under composer ---- */
+.cw-land-active-section {
+  margin-top:24px;
+}
+.cw-land-active-head {
+  display:flex;align-items:baseline;gap:10px;
+  margin-bottom:12px;padding:0 4px 10px;
+  border-bottom:1px solid var(--border);
+}
+.cw-land-active-eyebrow {
+  font-size:11px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--text-2);
+}
+.cw-land-active-id {
+  font-family:var(--font-mono);font-size:10.5px;
+  color:var(--text-4);
+  padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.04);
+}
+
+/* Empty state (legacy) */
+.cw-empty {
+  text-align:center;padding:48px 32px;
+  border:1px dashed var(--border-strong);border-radius:12px;
+  background:rgba(255,255,255,0.01);
+}
+.cw-empty-icon { display:flex;justify-content:center;margin-bottom:10px; }
+.cw-empty-title { font-size:15px;font-weight:600;margin-bottom:4px; }
+.cw-empty-sub { font-size:13px;color:var(--text-3);max-width:420px;margin:0 auto;line-height:1.5; }
+.cw-empty-sub strong { color:var(--text-2);font-weight:600; }
+.cw-empty-cta { margin-top:20px; }
+.cw-empty-btn {
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);color:#1f1e1c;border:none;
+  padding:9px 16px;border-radius:8px;font-size:13px;font-weight:600;
+  cursor:pointer;font-family:inherit;
+  transition:background 120ms ease;
+}
+.cw-empty-btn:hover { background:var(--accent-2); }
+
+/* Active task card */
+.cw-task {
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  border-radius:12px;overflow:hidden;
+}
+.cw-task-head {
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+}
+.cw-task-head-l { display:flex;align-items:center;gap:14px; }
+.cw-task-status {
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:11px;font-weight:500;letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--green);
+  padding:3px 8px 3px 7px;border-radius:5px;
+  background:rgba(127,200,154,0.10);
+  border:1px solid rgba(127,200,154,0.22);
+}
+.cw-task-pulse {
+  width:6px;height:6px;border-radius:50%;background:var(--green);
+  box-shadow:0 0 0 0 rgba(127,200,154,0.6);
+  animation:pulse 2s infinite;
+}
+@keyframes pulse {
+  0% { box-shadow:0 0 0 0 rgba(127,200,154,0.6); }
+  70% { box-shadow:0 0 0 6px rgba(127,200,154,0); }
+  100% { box-shadow:0 0 0 0 rgba(127,200,154,0); }
+}
+.cw-task-name { font-size:15px;font-weight:600; }
+.cw-task-id {
+  font-family:var(--font-mono);font-size:11px;
+  color:var(--text-4);
+  padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.04);
+}
+.cw-task-head-r { display:flex;gap:4px; }
+.cw-task-icon-btn {
+  width:28px;height:28px;border-radius:6px;
+  background:none;border:0;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.cw-task-icon-btn:hover { background:rgba(255,255,255,0.06);color:var(--text); }
+
+.cw-task-meta {
+  display:grid;grid-template-columns:repeat(4, 1fr);gap:1px;
+  background:var(--border);
+  border-bottom:1px solid var(--border);
+}
+.cw-task-meta-item { background:var(--bg-elev-1);padding:14px 18px; }
+.cw-task-meta-label {
+  font-size:10.5px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-4);font-weight:500;margin-bottom:6px;
+}
+.cw-task-meta-val { font-size:13px;color:var(--text); }
+.cw-task-meta-srcs { display:flex;gap:4px;flex-wrap:wrap; }
+
+.cw-task-tabs {
+  display:flex;gap:2px;
+  padding:8px 12px 0;
+  border-bottom:1px solid var(--border);
+}
+.cw-task-tab {
+  padding:8px 14px 10px;
+  background:none;border:0;border-bottom:2px solid transparent;
+  color:var(--text-3);font:inherit;font-size:12.5px;font-weight:500;cursor:default;
+  margin-bottom:-1px;
+}
+.cw-task-tab:hover { color:var(--text); }
+.cw-task-tab.is-on { color:var(--text);border-bottom-color:var(--accent); }
+
+/* Test run */
+.cw-test { padding:18px; }
+.cw-test-head {
+  display:flex;align-items:center;justify-content:space-between;
+  margin-bottom:14px;
+}
+.cw-test-success {
+  display:inline-flex;align-items:center;gap:8px;
+  font-size:13px;font-weight:500;color:var(--green);
+}
+.cw-test-time { font-size:11.5px;color:var(--text-4);font-variant-numeric:tabular-nums; }
+
+.cw-test-trace {
+  background:var(--bg-input);border:1px solid var(--border);
+  border-radius:8px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:7px;
+  margin-bottom:18px;
+  font-family:var(--font-mono);
+}
+.cw-trace { display:grid;grid-template-columns:14px 1fr auto;gap:10px;align-items:center; }
+.cw-trace-dot {
+  width:14px;height:14px;border-radius:50%;
+  border:1.5px solid var(--text-4);
+  display:flex;align-items:center;justify-content:center;
+}
+.cw-trace-dot.is-done { background:var(--green);border-color:var(--green);color:#1f1e1c; }
+.cw-trace-label { font-size:12px;color:var(--text-2); }
+.cw-trace-time { font-size:11px;color:var(--text-4);font-variant-numeric:tabular-nums; }
+
+.cw-test-preview {
+  border:1px solid var(--border-strong);
+  border-radius:10px;overflow:hidden;
+}
+.cw-test-preview-head {
+  display:flex;align-items:center;gap:10px;
+  padding:9px 12px;background:rgba(255,255,255,0.03);
+  border-bottom:1px solid var(--border);
+  font-size:11.5px;
+}
+.cw-test-preview-channel { color:var(--text-2);flex:1;font-family:var(--font-mono);font-size:11px; }
+.cw-test-preview-time { color:var(--text-4); }
+.cw-test-preview-body { background:#0d0d0d;padding:14px 16px; }
+
+.cw-slack-msg { display:flex;flex-direction:column;gap:4px; }
+.cw-slack-msg-head { display:flex;align-items:center;gap:8px; }
+.cw-slack-bot { font-weight:700;font-size:14px;color:#e8e6e0; }
+.cw-slack-bot-tag {
+  font-size:9px;font-weight:700;letter-spacing:0.06em;
+  padding:1.5px 4px;border-radius:3px;
+  background:rgba(255,255,255,0.10);color:rgba(255,255,255,0.7);
+}
+.cw-slack-time { font-size:11.5px;color:rgba(255,255,255,0.4); }
+.cw-slack-msg-body {
+  font-size:13.5px;line-height:1.6;color:#d4d2cc;
+  font-family:'Lato', system-ui, sans-serif;
+}
+.cw-slack-msg-body strong { color:#fff; }
+.cw-slack-attach {
+  margin-top:10px;font-size:11.5px;color:rgba(255,255,255,0.4);
+  padding-top:8px;border-top:1px solid rgba(255,255,255,0.08);
+}
+.cw-slack-attach a { color:#5b8def;text-decoration:none;cursor:default; }
+
+/* History */
+.cw-history { padding:18px; }
+.cw-history-row {
+  display:grid;grid-template-columns:14px 1fr 1fr auto;gap:14px;
+  padding:10px 0;align-items:center;font-size:12.5px;
+  border-bottom:1px solid var(--border);
+}
+.cw-history-row.is-current { background:rgba(217,119,87,0.04);padding:10px 12px;border-radius:6px;border:1px solid var(--accent-border);margin-bottom:8px; }
+.cw-history-dot { width:8px;height:8px;border-radius:50%; }
+.cw-history-dot.is-success { background:var(--green); }
+.cw-history-when { color:var(--text); }
+.cw-history-result { color:var(--text-3); }
+.cw-history-dur { color:var(--text-4);font-family:var(--font-mono);font-size:11.5px; }
+.cw-history-empty {
+  text-align:center;padding:32px 16px;color:var(--text-3);font-size:13px;
+}
+.cw-history-empty strong { color:var(--text); }
+
+/* Prompt */
+.cw-prompt { padding:18px; }
+.cw-prompt-label { font-size:11px;letter-spacing:0.06em;text-transform:uppercase;color:var(--text-3);margin-bottom:8px;font-weight:500; }
+.cw-prompt-pre {
+  background:var(--bg-input);border:1px solid var(--border);border-radius:8px;
+  padding:14px 16px;font-family:var(--font-mono);font-size:12.5px;line-height:1.6;
+  color:var(--text-2);white-space:pre-wrap;margin:0 0 14px;
+}
+.cw-prompt-edit { display:flex;align-items:center;gap:12px; }
+.cw-prompt-edit-btn {
+  padding:6px 12px;border-radius:6px;font:inherit;font-size:12px;
+  background:rgba(255,255,255,0.05);border:1px solid var(--border-strong);
+  color:var(--text);cursor:default;
+}
+.cw-prompt-edit-hint { font-size:11.5px;color:var(--text-4); }
+
+/* Templates */
+.cw-template-grid { display:grid;grid-template-columns:repeat(4, 1fr);gap:10px; }
+.cw-template {
+  display:flex;flex-direction:column;align-items:flex-start;gap:4px;
+  padding:14px;border-radius:10px;
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  text-align:left;cursor:default;color:var(--text);font:inherit;
+  opacity:0.5;
+}
+.cw-template-icon { font-size:20px;margin-bottom:4px; }
+.cw-template-title { font-size:12.5px;font-weight:600; }
+.cw-template-sub { font-size:11px;color:var(--text-3);line-height:1.4;flex:1; }
+.cw-template-lock { font-size:10.5px;color:var(--text-4);margin-top:8px;padding-top:8px;border-top:1px solid var(--border);width:100%; }
+
+/* Upgrade callout — shown after the free test is spent */
+.cw-upgrade {
+  position:relative;
+  border-radius:14px;
+  background:
+    radial-gradient(120% 140% at 100% 0%, rgba(217,119,87,0.18), transparent 50%),
+    linear-gradient(180deg, rgba(217,119,87,0.10), rgba(217,119,87,0.04));
+  border:1px solid var(--accent-border);
+  padding:22px 24px;
+  overflow:hidden;
+}
+.cw-upgrade::after {
+  content:'';
+  position:absolute;inset:0;
+  background:radial-gradient(60% 80% at 90% 110%, rgba(217,119,87,0.20), transparent 60%);
+  pointer-events:none;
+}
+.cw-upgrade-row {
+  display:grid;grid-template-columns:1fr auto;gap:24px;align-items:center;
+  position:relative;z-index:1;
+  margin-bottom:20px;
+}
+.cw-upgrade-eyebrow {
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10.5px;font-weight:600;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--accent);margin-bottom:8px;
+}
+.cw-upgrade-eyebrow-dot {
+  width:6px;height:6px;border-radius:50%;background:var(--accent);
+}
+.cw-upgrade-title {
+  font-family:var(--font-serif);font-weight:500;
+  font-size:22px;line-height:1.2;letter-spacing:-0.01em;
+  color:var(--text);margin:0 0 6px;
+}
+.cw-upgrade-sub {
+  font-size:13.5px;line-height:1.55;color:var(--text-2);
+  margin:0;max-width:480px;
+}
+.cw-upgrade-cta-col { display:flex;flex-direction:column;align-items:flex-end;gap:6px; }
+.cw-upgrade-price {
+  font-size:11.5px;color:var(--text-3);
+}
+.cw-upgrade-price strong { color:var(--text);font-weight:600; }
+.cw-upgrade-cta {
+  display:inline-flex;align-items:center;gap:7px;
+  padding:10px 18px;border-radius:9px;
+  background:var(--accent);color:#fff;border:0;font:inherit;font-size:13.5px;font-weight:600;
+  cursor:default;
+  box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 8px 24px -6px rgba(217,119,87,0.55);
+}
+.cw-upgrade-cta:hover { background:#cf6b48; }
+
+.cw-upgrade-examples-label {
+  font-size:10.5px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-3);font-weight:600;margin-bottom:10px;
+  position:relative;z-index:1;
+}
+.cw-upgrade-examples {
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:10px;
+  position:relative;z-index:1;
+}
+.cw-upgrade-ex {
+  background:rgba(255,255,255,0.03);
+  border:1px solid var(--border-strong);
+  border-radius:10px;padding:12px 14px;
+  display:flex;flex-direction:column;gap:6px;
+  text-align:left;color:var(--text);font:inherit;cursor:default;
+  transition:background 0.12s, border-color 0.12s, transform 0.12s;
+}
+.cw-upgrade-ex:hover {
+  background:rgba(217,119,87,0.06);border-color:var(--accent-border);
+  transform:translateY(-1px);
+}
+.cw-upgrade-ex-cadence {
+  font-family:var(--font-mono);
+  font-size:10px;letter-spacing:0.04em;text-transform:uppercase;
+  color:var(--accent);font-weight:500;
+}
+.cw-upgrade-ex-title {
+  font-size:13px;font-weight:600;color:var(--text);line-height:1.3;
+}
+.cw-upgrade-ex-sub {
+  font-size:11.5px;color:var(--text-3);line-height:1.45;
+}
+.cw-upgrade-ex-srcs { display:flex;gap:4px;margin-top:2px; }
+
+.cw-quota-spent-tag {
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  color:var(--accent);
+  padding:3px 8px;border-radius:5px;
+  background:rgba(217,119,87,0.10);
+  border:1px solid var(--accent-border);
+  margin-top:8px;
+}
+
+/* Used-task card (locked, free run consumed) */
+.cw-used {
+  position:relative;
+  border-radius:16px;overflow:hidden;
+  background:#161513;
+  border:1px solid var(--border-strong);
+}
+.cw-used-bar {
+  display:flex;align-items:center;gap:10px;
+  padding:10px 16px;
+  background:linear-gradient(90deg, rgba(217,119,87,0.16), rgba(217,119,87,0.06));
+  border-bottom:1px solid var(--accent-border);
+  font-size:12px;color:var(--accent);
+  font-weight:600;letter-spacing:0.04em;
+}
+.cw-used-bar svg { opacity:0.95; }
+.cw-used-bar-spacer { flex:1; }
+.cw-used-bar-meta { color:var(--text-3);font-weight:500;letter-spacing:0; }
+
+.cw-used-head {
+  display:flex;align-items:flex-start;justify-content:space-between;gap:16px;
+  padding:18px 20px 6px;
+}
+.cw-used-titles { flex:1;min-width:0; }
+.cw-used-eyebrow {
+  display:inline-flex;align-items:center;gap:7px;
+  font-size:10.5px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-3);margin-bottom:6px;
+}
+.cw-used-eyebrow-dot {
+  width:6px;height:6px;border-radius:50%;background:var(--text-4);
+}
+.cw-used-name {
+  font-family:var(--font-serif);font-weight:500;
+  font-size:22px;line-height:1.15;letter-spacing:-0.01em;
+  color:var(--text);margin:0 0 4px;
+}
+.cw-used-id {
+  font-family:var(--font-mono);font-size:11px;color:var(--text-4);
+  padding:2px 6px;border-radius:4px;background:rgba(255,255,255,0.04);
+  display:inline-block;
+}
+
+.cw-used-prompt {
+  position:relative;
+  margin:14px 20px 18px;
+  border-radius:12px;
+  background:#1f1e1c;border:1px solid var(--border-strong);
+  padding:16px 18px;
+}
+.cw-used-prompt-label {
+  font-size:10.5px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-3);font-weight:600;margin-bottom:8px;
+  display:flex;align-items:center;gap:8px;
+}
+.cw-used-prompt-text {
+  font-size:14px;line-height:1.6;color:var(--text);
+}
+.cw-used-prompt-srcs {
+  display:flex;align-items:center;gap:8px;flex-wrap:wrap;
+  margin-top:14px;padding-top:12px;
+  border-top:1px solid var(--border);
+  font-size:11.5px;color:var(--text-3);
+}
+.cw-used-prompt-srcs-label { letter-spacing:0.04em; }
+.cw-used-prompt-srcs-list { display:flex;gap:5px;flex-wrap:wrap; }
+
+.cw-used-meta-grid {
+  display:grid;grid-template-columns:repeat(3, 1fr);gap:1px;
+  background:var(--border);
+  border-top:1px solid var(--border);
+}
+.cw-used-meta-cell { background:#161513;padding:14px 18px; }
+.cw-used-meta-label {
+  font-size:10px;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text-4);font-weight:600;margin-bottom:6px;
+}
+.cw-used-meta-val { font-size:13px;color:var(--text);display:flex;align-items:center;gap:6px;flex-wrap:wrap; }
+.cw-used-meta-val.is-paused { color:var(--text-3); }
+.cw-used-meta-val .src-chip { font-size:10.5px; }
+.cw-used-meta-strike { text-decoration:line-through;text-decoration-color:rgba(233,231,224,0.3); }
+
+.cw-used-foot {
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:14px 18px;border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.18);
+}
+.cw-used-foot-left {
+  display:flex;align-items:center;gap:10px;
+  font-size:12.5px;color:var(--text-2);
+}
+.cw-used-foot-left strong { color:var(--text);font-weight:600; }
+.cw-used-foot-cta {
+  display:inline-flex;align-items:center;gap:7px;
+  padding:9px 16px;border-radius:8px;
+  background:var(--accent);color:#fff;border:0;
+  font:inherit;font-size:13px;font-weight:600;cursor:default;
+  box-shadow:0 1px 0 rgba(255,255,255,0.18) inset, 0 6px 18px -5px rgba(217,119,87,0.5);
+}
+.cw-used-foot-cta:hover { background:#cf6b48; }
+
+/* Chat-start card (alternative to manual editor) */
+.cw-chat-start {
+  position:relative;
+  border-radius:16px;
+  background:#161513;
+  border:1px solid var(--border-strong);
+  padding:24px 26px 22px;
+  overflow:hidden;
+}
+.cw-chat-start::before {
+  content:'';position:absolute;inset:0;
+  background-image:radial-gradient(rgba(255,255,255,0.05) 1px, transparent 1px);
+  background-size:14px 14px;
+  background-position:0 0;
+  -webkit-mask-image:linear-gradient(135deg, rgba(0,0,0,0.6), transparent 55%);
+          mask-image:linear-gradient(135deg, rgba(0,0,0,0.6), transparent 55%);
+  pointer-events:none;
+}
+.cw-chat-start-head {
+  display:flex;align-items:flex-start;gap:14px;
+  margin-bottom:18px;position:relative;z-index:1;
+}
+.cw-chat-start-head .msg-claude-mark {
+  width:32px;height:32px;border-radius:8px;
+  background:rgba(217,119,87,0.12);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.cw-chat-start-head .msg-claude-mark svg { width:16px;height:16px; }
+.cw-chat-start-headings { flex:1; }
+.cw-chat-start-h1 {
+  font-family:var(--font-serif);font-weight:500;
+  font-size:24px;line-height:1.2;letter-spacing:-0.01em;
+  color:var(--text);margin:0 0 4px;
+}
+.cw-chat-start-msg {
+  font-size:13.5px;line-height:1.55;color:var(--text-2);
+}
+.cw-chat-start-link {
+  display:inline-block;font-size:12.5px;color:var(--text-3);
+  text-decoration:underline;text-underline-offset:3px;text-decoration-color:rgba(233,231,224,0.25);
+  margin-top:4px;
+}
+
+.cw-chat-start-composer {
+  position:relative;z-index:1;
+  background:#1f1e1c;border:1px solid var(--border-strong);
+  border-radius:14px;padding:14px 16px 10px;
+}
+.cw-chat-start-input {
+  font-size:14.5px;color:var(--text-4);
+  padding:6px 0 14px;min-height:60px;
+  border-bottom:1px dashed transparent;
+}
+.cw-chat-start-row {
+  display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding-top:6px;
+}
+.cw-chat-start-tools { display:flex;align-items:center;gap:2px; }
+.cw-chat-start-tools .composer-tool {
+  font-size:12.5px;color:var(--text-3);
+}
+.cw-chat-start-send {
+  width:32px;height:32px;border-radius:50%;
+  background:rgba(255,255,255,0.06);border:0;color:var(--text-3);
+  display:flex;align-items:center;justify-content:center;cursor:default;
+}
+.cw-chat-start-send:hover { background:rgba(217,119,87,0.18);color:var(--accent); }
+
+.cw-chat-start-suggestions {
+  display:flex;flex-wrap:wrap;gap:6px;
+  margin-top:14px;position:relative;z-index:1;
+}
+.cw-chat-start-suggestion {
+  display:inline-flex;align-items:center;gap:7px;
+  padding:6px 11px 6px 10px;border-radius:999px;
+  background:rgba(255,255,255,0.04);border:1px solid var(--border);
+  color:var(--text-2);font:inherit;font-size:12px;cursor:default;
+  transition:background 0.12s, color 0.12s, border-color 0.12s;
+}
+.cw-chat-start-suggestion:hover {
+  background:rgba(217,119,87,0.08);color:var(--text);border-color:var(--accent-border);
+}
+.cw-chat-start-suggestion svg { color:var(--accent);opacity:0.75; }
+
+.cw-or {
+  display:flex;align-items:center;gap:14px;
+  margin:24px 4px 16px;
+  color:var(--text-4);font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+}
+.cw-or::before, .cw-or::after {
+  content:'';flex:1;height:1px;background:var(--border);
+}
+
+/* Inline editor inside Cowork tab */
+.cw-editor {
+  position:relative;
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  border-radius:12px;overflow:hidden;
+}
+.cw-editor.is-locked { opacity:0.92; }
+.cw-editor-head {
+  display:flex;align-items:center;justify-content:space-between;
+  padding:14px 18px;border-bottom:1px solid var(--border);
+}
+.cw-editor-title {
+  font-size:14px;font-weight:600;color:var(--text);
+  display:flex;align-items:center;gap:10px;
+}
+.cw-editor-state {
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:10.5px;font-weight:600;letter-spacing:0.06em;text-transform:uppercase;
+  padding:3px 8px;border-radius:5px;
+}
+.cw-editor-state.is-draft { background:rgba(127,200,154,0.10);color:var(--green);border:1px solid rgba(127,200,154,0.22); }
+.cw-editor-state.is-locked { background:rgba(217,119,87,0.10);color:var(--accent);border:1px solid var(--accent-border); }
+.cw-editor-state.is-locked svg { opacity:0.9; }
+.cw-editor-body {
+  padding:18px;display:flex;flex-direction:column;gap:14px;
+}
+.cw-editor-body.is-locked { pointer-events:none;user-select:none; }
+.cw-editor-foot {
+  display:flex;align-items:center;justify-content:space-between;gap:10px;
+  padding:12px 18px;border-top:1px solid var(--border);
+  background:rgba(0,0,0,0.12);
+}
+.cw-editor-foot-left { font-size:11.5px;color:var(--text-3); }
+.cw-editor-foot-left strong { color:var(--text-2); }
+.cw-editor-foot-actions { display:flex;gap:8px; }
+
+.cw-editor-locked-bar {
+  display:flex;align-items:center;justify-content:space-between;gap:14px;
+  padding:11px 14px;
+  background:linear-gradient(180deg, rgba(217,119,87,0.10), rgba(217,119,87,0.04));
+  border-bottom:1px solid var(--accent-border);
+}
+.cw-editor-locked-bar-text { font-size:12.5px;color:var(--text-2); }
+.cw-editor-locked-bar-text strong { color:var(--text); }
+.cw-editor-locked-bar-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 12px;border-radius:7px;
+  background:var(--accent);color:#fff;border:0;
+  font:inherit;font-size:12px;font-weight:600;cursor:default;
+  box-shadow:0 1px 0 rgba(255,255,255,0.15) inset;
+}
+.cw-editor-locked-bar-cta:hover { background:#cf6b48; }
+
+/* Confirmation toast */
+.confirm-toast {
+  position:absolute;left:50%;top:60px;transform:translateX(-50%);
+  background:rgba(127,200,154,0.12);
+  border:1px solid rgba(127,200,154,0.32);
+  color:var(--green);
+  padding:9px 16px;border-radius:8px;
+  font-size:12.5px;font-weight:500;
+  display:inline-flex;align-items:center;gap:8px;
+  z-index:60;
+  animation:slidedown 0.3s cubic-bezier(0.2,0.8,0.2,1);
+  backdrop-filter:blur(12px);
+}
+@keyframes slidedown { from{transform:translate(-50%, -10px);opacity:0} to{transform:translate(-50%, 0);opacity:1} }
+
+/* Setup picker (when "explore a few options") */
+.setup-picker {
+  position:absolute;inset:0;
+  background:rgba(0,0,0,0.5);backdrop-filter:blur(2px);
+  display:flex;align-items:center;justify-content:center;
+  z-index:50;
+  animation:fadein 0.2s;
+}
+.setup-picker-card {
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  border-radius:14px;padding:20px;width:480px;max-width:calc(100% - 32px);
+  box-shadow:0 24px 80px rgba(0,0,0,0.5);
+}
+.setup-picker-head { margin-bottom:14px;text-align:center; }
+.setup-picker-title { font-size:15px;font-weight:600;margin-bottom:4px; }
+.setup-picker-sub { font-size:12.5px;color:var(--text-3); }
+.setup-picker-options { display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px; }
+.setup-picker-opt {
+  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  border-radius:10px;padding:14px 12px;
+  color:var(--text);font:inherit;text-align:left;cursor:default;
+  display:flex;flex-direction:column;gap:6px;
+  transition:background 0.12s, border-color 0.12s, transform 0.12s;
+}
+.setup-picker-opt:hover {
+  background:rgba(217,119,87,0.06);border-color:var(--accent-border);
+  transform:translateY(-1px);
+}
+.setup-picker-opt-icon { font-size:18px;margin-bottom:4px; }
+.setup-picker-opt-title { font-size:12.5px;font-weight:600; }
+.setup-picker-opt-sub { font-size:10.5px;color:var(--text-3);line-height:1.4; }
+</style>
+
+<script src="https://unpkg.com/react@18.3.1/umd/react.development.js" integrity="sha384-hD6/rw4ppMLGNu3tX5cjIb+uRZ7UkRJ6BPkLpg4hAu/6onKUg4lLsHAs9EBPT82L" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/react-dom@18.3.1/umd/react-dom.development.js" integrity="sha384-u6aeetuaXnQ38mYT8rp6sbXaQe3NL9t+IBXmnYxwkUI2Hw4bsp2Wvmx4yRQF1uAm" crossorigin="anonymous"></script>
+<script src="https://unpkg.com/@babel/standalone@7.29.0/babel.min.js" integrity="sha384-m08KidiNqLdpJqLq95G/LEi8Qvjl/xUYll3QILypMoQ65QorJ9Lvtp2RXYGBFj1y" crossorigin="anonymous"></script>
+</head>
+<body>
+<div id="root"></div>
+
+<script type="text/babel" data-presets="react">
+
+
+// ===== tweaks-panel.jsx =====
+
+// tweaks-panel.jsx
+// Reusable Tweaks shell + form-control helpers.
+//
+// Owns the host protocol (listens for __activate_edit_mode / __deactivate_edit_mode,
+// posts __edit_mode_available / __edit_mode_set_keys / __edit_mode_dismissed) so
+// individual prototypes don't re-roll it. Ships a consistent set of controls so you
+// don't hand-draw <input type="range">, segmented radios, steppers, etc.
+//
+// Usage (in an HTML file that loads React + Babel):
+//
+//   const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+//     "primaryColor": "#D97757",
+//     "fontSize": 16,
+//     "density": "regular",
+//     "dark": false
+//   }/*EDITMODE-END*/;
+//
+//   function App() {
+//     const [t, setTweak] = useTweaks(TWEAK_DEFAULTS);
+//     return (
+//       <div style={{ fontSize: t.fontSize, color: t.primaryColor }}>
+//         Hello
+//         <TweaksPanel>
+//           <TweakSection label="Typography" />
+//           <TweakSlider label="Font size" value={t.fontSize} min={10} max={32} unit="px"
+//                        onChange={(v) => setTweak('fontSize', v)} />
+//           <TweakRadio  label="Density" value={t.density}
+//                        options={['compact', 'regular', 'comfy']}
+//                        onChange={(v) => setTweak('density', v)} />
+//           <TweakSection label="Theme" />
+//           <TweakColor  label="Primary" value={t.primaryColor}
+//                        onChange={(v) => setTweak('primaryColor', v)} />
+//           <TweakToggle label="Dark mode" value={t.dark}
+//                        onChange={(v) => setTweak('dark', v)} />
+//         </TweaksPanel>
+//       </div>
+//     );
+//   }
+//
+// ─────────────────────────────────────────────────────────────────────────────
+
+const __TWEAKS_STYLE = `
+  .twk-panel{position:fixed;right:16px;bottom:16px;z-index:2147483646;width:280px;
+    max-height:calc(100vh - 32px);display:flex;flex-direction:column;
+    background:rgba(250,249,247,.78);color:#29261b;
+    -webkit-backdrop-filter:blur(24px) saturate(160%);backdrop-filter:blur(24px) saturate(160%);
+    border:.5px solid rgba(255,255,255,.6);border-radius:14px;
+    box-shadow:0 1px 0 rgba(255,255,255,.5) inset,0 12px 40px rgba(0,0,0,.18);
+    font:11.5px/1.4 ui-sans-serif,system-ui,-apple-system,sans-serif;overflow:hidden}
+  .twk-hd{display:flex;align-items:center;justify-content:space-between;
+    padding:10px 8px 10px 14px;cursor:move;user-select:none}
+  .twk-hd b{font-size:12px;font-weight:600;letter-spacing:.01em}
+  .twk-x{appearance:none;border:0;background:transparent;color:rgba(41,38,27,.55);
+    width:22px;height:22px;border-radius:6px;cursor:default;font-size:13px;line-height:1}
+  .twk-x:hover{background:rgba(0,0,0,.06);color:#29261b}
+  .twk-body{padding:2px 14px 14px;display:flex;flex-direction:column;gap:10px;
+    overflow-y:auto;overflow-x:hidden;min-height:0;
+    scrollbar-width:thin;scrollbar-color:rgba(0,0,0,.15) transparent}
+  .twk-body::-webkit-scrollbar{width:8px}
+  .twk-body::-webkit-scrollbar-track{background:transparent;margin:2px}
+  .twk-body::-webkit-scrollbar-thumb{background:rgba(0,0,0,.15);border-radius:4px;
+    border:2px solid transparent;background-clip:content-box}
+  .twk-body::-webkit-scrollbar-thumb:hover{background:rgba(0,0,0,.25);
+    border:2px solid transparent;background-clip:content-box}
+  .twk-row{display:flex;flex-direction:column;gap:5px}
+  .twk-row-h{flex-direction:row;align-items:center;justify-content:space-between;gap:10px}
+  .twk-lbl{display:flex;justify-content:space-between;align-items:baseline;
+    color:rgba(41,38,27,.72)}
+  .twk-lbl>span:first-child{font-weight:500}
+  .twk-val{color:rgba(41,38,27,.5);font-variant-numeric:tabular-nums}
+
+  .twk-sect{font-size:10px;font-weight:600;letter-spacing:.06em;text-transform:uppercase;
+    color:rgba(41,38,27,.45);padding:10px 0 0}
+  .twk-sect:first-child{padding-top:0}
+
+  .twk-field{appearance:none;width:100%;height:26px;padding:0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;
+    background:rgba(255,255,255,.6);color:inherit;font:inherit;outline:none}
+  .twk-field:focus{border-color:rgba(0,0,0,.25);background:rgba(255,255,255,.85)}
+  select.twk-field{padding-right:22px;
+    background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'><path fill='rgba(0,0,0,.5)' d='M0 0h10L5 6z'/></svg>");
+    background-repeat:no-repeat;background-position:right 8px center}
+
+  .twk-slider{appearance:none;-webkit-appearance:none;width:100%;height:4px;margin:6px 0;
+    border-radius:999px;background:rgba(0,0,0,.12);outline:none}
+  .twk-slider::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;
+    width:14px;height:14px;border-radius:50%;background:#fff;
+    border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+  .twk-slider::-moz-range-thumb{width:14px;height:14px;border-radius:50%;
+    background:#fff;border:.5px solid rgba(0,0,0,.12);box-shadow:0 1px 3px rgba(0,0,0,.2);cursor:default}
+
+  .twk-seg{position:relative;display:flex;padding:2px;border-radius:8px;
+    background:rgba(0,0,0,.06);user-select:none}
+  .twk-seg-thumb{position:absolute;top:2px;bottom:2px;border-radius:6px;
+    background:rgba(255,255,255,.9);box-shadow:0 1px 2px rgba(0,0,0,.12);
+    transition:left .15s cubic-bezier(.3,.7,.4,1),width .15s}
+  .twk-seg.dragging .twk-seg-thumb{transition:none}
+  .twk-seg button{appearance:none;position:relative;z-index:1;flex:1;border:0;
+    background:transparent;color:inherit;font:inherit;font-weight:500;min-height:22px;
+    border-radius:6px;cursor:default;padding:4px 6px;line-height:1.2;
+    overflow-wrap:anywhere}
+
+  .twk-toggle{position:relative;width:32px;height:18px;border:0;border-radius:999px;
+    background:rgba(0,0,0,.15);transition:background .15s;cursor:default;padding:0}
+  .twk-toggle[data-on="1"]{background:#34c759}
+  .twk-toggle i{position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;
+    background:#fff;box-shadow:0 1px 2px rgba(0,0,0,.25);transition:transform .15s}
+  .twk-toggle[data-on="1"] i{transform:translateX(14px)}
+
+  .twk-num{display:flex;align-items:center;height:26px;padding:0 0 0 8px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:7px;background:rgba(255,255,255,.6)}
+  .twk-num-lbl{font-weight:500;color:rgba(41,38,27,.6);cursor:ew-resize;
+    user-select:none;padding-right:8px}
+  .twk-num input{flex:1;min-width:0;height:100%;border:0;background:transparent;
+    font:inherit;font-variant-numeric:tabular-nums;text-align:right;padding:0 8px 0 0;
+    outline:none;color:inherit;-moz-appearance:textfield}
+  .twk-num input::-webkit-inner-spin-button,.twk-num input::-webkit-outer-spin-button{
+    -webkit-appearance:none;margin:0}
+  .twk-num-unit{padding-right:8px;color:rgba(41,38,27,.45)}
+
+  .twk-btn{appearance:none;height:26px;padding:0 12px;border:0;border-radius:7px;
+    background:rgba(0,0,0,.78);color:#fff;font:inherit;font-weight:500;cursor:default}
+  .twk-btn:hover{background:rgba(0,0,0,.88)}
+  .twk-btn.secondary{background:rgba(0,0,0,.06);color:inherit}
+  .twk-btn.secondary:hover{background:rgba(0,0,0,.1)}
+
+  .twk-swatch{appearance:none;-webkit-appearance:none;width:56px;height:22px;
+    border:.5px solid rgba(0,0,0,.1);border-radius:6px;padding:0;cursor:default;
+    background:transparent;flex-shrink:0}
+  .twk-swatch::-webkit-color-swatch-wrapper{padding:0}
+  .twk-swatch::-webkit-color-swatch{border:0;border-radius:5.5px}
+  .twk-swatch::-moz-color-swatch{border:0;border-radius:5.5px}
+`;
+
+// ── useTweaks ───────────────────────────────────────────────────────────────
+// Single source of truth for tweak values. setTweak persists via the host
+// (__edit_mode_set_keys → host rewrites the EDITMODE block on disk).
+function useTweaks(defaults) {
+  const [values, setValues] = React.useState(defaults);
+  // Accepts either setTweak('key', value) or setTweak({ key: value, ... }) so a
+  // useState-style call doesn't write a "[object Object]" key into the persisted
+  // JSON block.
+  const setTweak = React.useCallback((keyOrEdits, val) => {
+    const edits = typeof keyOrEdits === 'object' && keyOrEdits !== null
+      ? keyOrEdits : { [keyOrEdits]: val };
+    setValues((prev) => ({ ...prev, ...edits }));
+    window.parent.postMessage({ type: '__edit_mode_set_keys', edits }, '*');
+  }, []);
+  return [values, setTweak];
+}
+
+// ── TweaksPanel ─────────────────────────────────────────────────────────────
+// Floating shell. Registers the protocol listener BEFORE announcing
+// availability — if the announce ran first, the host's activate could land
+// before our handler exists and the toolbar toggle would silently no-op.
+// The close button posts __edit_mode_dismissed so the host's toolbar toggle
+// flips off in lockstep; the host echoes __deactivate_edit_mode back which
+// is what actually hides the panel.
+function TweaksPanel({ title = 'Tweaks', children }) {
+  const [open, setOpen] = React.useState(false);
+  const dragRef = React.useRef(null);
+  const offsetRef = React.useRef({ x: 16, y: 16 });
+  const PAD = 16;
+
+  const clampToViewport = React.useCallback(() => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const w = panel.offsetWidth, h = panel.offsetHeight;
+    const maxRight = Math.max(PAD, window.innerWidth - w - PAD);
+    const maxBottom = Math.max(PAD, window.innerHeight - h - PAD);
+    offsetRef.current = {
+      x: Math.min(maxRight, Math.max(PAD, offsetRef.current.x)),
+      y: Math.min(maxBottom, Math.max(PAD, offsetRef.current.y)),
+    };
+    panel.style.right = offsetRef.current.x + 'px';
+    panel.style.bottom = offsetRef.current.y + 'px';
+  }, []);
+
+  React.useEffect(() => {
+    if (!open) return;
+    clampToViewport();
+    if (typeof ResizeObserver === 'undefined') {
+      window.addEventListener('resize', clampToViewport);
+      return () => window.removeEventListener('resize', clampToViewport);
+    }
+    const ro = new ResizeObserver(clampToViewport);
+    ro.observe(document.documentElement);
+    return () => ro.disconnect();
+  }, [open, clampToViewport]);
+
+  React.useEffect(() => {
+    const onMsg = (e) => {
+      const t = e?.data?.type;
+      if (t === '__activate_edit_mode') setOpen(true);
+      else if (t === '__deactivate_edit_mode') setOpen(false);
+    };
+    window.addEventListener('message', onMsg);
+    window.parent.postMessage({ type: '__edit_mode_available' }, '*');
+    return () => window.removeEventListener('message', onMsg);
+  }, []);
+
+  const dismiss = () => {
+    setOpen(false);
+    window.parent.postMessage({ type: '__edit_mode_dismissed' }, '*');
+  };
+
+  const onDragStart = (e) => {
+    const panel = dragRef.current;
+    if (!panel) return;
+    const r = panel.getBoundingClientRect();
+    const sx = e.clientX, sy = e.clientY;
+    const startRight = window.innerWidth - r.right;
+    const startBottom = window.innerHeight - r.bottom;
+    const move = (ev) => {
+      offsetRef.current = {
+        x: startRight - (ev.clientX - sx),
+        y: startBottom - (ev.clientY - sy),
+      };
+      clampToViewport();
+    };
+    const up = () => {
+      window.removeEventListener('mousemove', move);
+      window.removeEventListener('mouseup', up);
+    };
+    window.addEventListener('mousemove', move);
+    window.addEventListener('mouseup', up);
+  };
+
+  if (!open) return null;
+  return (
+    <>
+      <style>{__TWEAKS_STYLE}</style>
+      <div ref={dragRef} className="twk-panel"
+           style={{ right: offsetRef.current.x, bottom: offsetRef.current.y }}>
+        <div className="twk-hd" onMouseDown={onDragStart}>
+          <b>{title}</b>
+          <button className="twk-x" aria-label="Close tweaks"
+                  onMouseDown={(e) => e.stopPropagation()}
+                  onClick={dismiss}>✕</button>
+        </div>
+        <div className="twk-body">{children}</div>
+      </div>
+    </>
+  );
+}
+
+// ── Layout helpers ──────────────────────────────────────────────────────────
+
+function TweakSection({ label, children }) {
+  return (
+    <>
+      <div className="twk-sect">{label}</div>
+      {children}
+    </>
+  );
+}
+
+function TweakRow({ label, value, children, inline = false }) {
+  return (
+    <div className={inline ? 'twk-row twk-row-h' : 'twk-row'}>
+      <div className="twk-lbl">
+        <span>{label}</span>
+        {value != null && <span className="twk-val">{value}</span>}
+      </div>
+      {children}
+    </div>
+  );
+}
+
+// ── Controls ────────────────────────────────────────────────────────────────
+
+function TweakSlider({ label, value, min = 0, max = 100, step = 1, unit = '', onChange }) {
+  return (
+    <TweakRow label={label} value={`${value}${unit}`}>
+      <input type="range" className="twk-slider" min={min} max={max} step={step}
+             value={value} onChange={(e) => onChange(Number(e.target.value))} />
+    </TweakRow>
+  );
+}
+
+function TweakToggle({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <button type="button" className="twk-toggle" data-on={value ? '1' : '0'}
+              role="switch" aria-checked={!!value}
+              onClick={() => onChange(!value)}><i /></button>
+    </div>
+  );
+}
+
+function TweakRadio({ label, value, options, onChange }) {
+  const trackRef = React.useRef(null);
+  const [dragging, setDragging] = React.useState(false);
+  const opts = options.map((o) => (typeof o === 'object' ? o : { value: o, label: o }));
+  const idx = Math.max(0, opts.findIndex((o) => o.value === value));
+  const n = opts.length;
+
+  // The active value is read by pointer-move handlers attached for the lifetime
+  // of a drag — ref it so a stale closure doesn't fire onChange for every move.
+  const valueRef = React.useRef(value);
+  valueRef.current = value;
+
+  const segAt = (clientX) => {
+    const r = trackRef.current.getBoundingClientRect();
+    const inner = r.width - 4;
+    const i = Math.floor(((clientX - r.left - 2) / inner) * n);
+    return opts[Math.max(0, Math.min(n - 1, i))].value;
+  };
+
+  const onPointerDown = (e) => {
+    setDragging(true);
+    const v0 = segAt(e.clientX);
+    if (v0 !== valueRef.current) onChange(v0);
+    const move = (ev) => {
+      if (!trackRef.current) return;
+      const v = segAt(ev.clientX);
+      if (v !== valueRef.current) onChange(v);
+    };
+    const up = () => {
+      setDragging(false);
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+
+  return (
+    <TweakRow label={label}>
+      <div ref={trackRef} role="radiogroup" onPointerDown={onPointerDown}
+           className={dragging ? 'twk-seg dragging' : 'twk-seg'}>
+        <div className="twk-seg-thumb"
+             style={{ left: `calc(2px + ${idx} * (100% - 4px) / ${n})`,
+                      width: `calc((100% - 4px) / ${n})` }} />
+        {opts.map((o) => (
+          <button key={o.value} type="button" role="radio" aria-checked={o.value === value}>
+            {o.label}
+          </button>
+        ))}
+      </div>
+    </TweakRow>
+  );
+}
+
+function TweakSelect({ label, value, options, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <select className="twk-field" value={value} onChange={(e) => onChange(e.target.value)}>
+        {options.map((o) => {
+          const v = typeof o === 'object' ? o.value : o;
+          const l = typeof o === 'object' ? o.label : o;
+          return <option key={v} value={v}>{l}</option>;
+        })}
+      </select>
+    </TweakRow>
+  );
+}
+
+function TweakText({ label, value, placeholder, onChange }) {
+  return (
+    <TweakRow label={label}>
+      <input className="twk-field" type="text" value={value} placeholder={placeholder}
+             onChange={(e) => onChange(e.target.value)} />
+    </TweakRow>
+  );
+}
+
+function TweakNumber({ label, value, min, max, step = 1, unit = '', onChange }) {
+  const clamp = (n) => {
+    if (min != null && n < min) return min;
+    if (max != null && n > max) return max;
+    return n;
+  };
+  const startRef = React.useRef({ x: 0, val: 0 });
+  const onScrubStart = (e) => {
+    e.preventDefault();
+    startRef.current = { x: e.clientX, val: value };
+    const decimals = (String(step).split('.')[1] || '').length;
+    const move = (ev) => {
+      const dx = ev.clientX - startRef.current.x;
+      const raw = startRef.current.val + dx * step;
+      const snapped = Math.round(raw / step) * step;
+      onChange(clamp(Number(snapped.toFixed(decimals))));
+    };
+    const up = () => {
+      window.removeEventListener('pointermove', move);
+      window.removeEventListener('pointerup', up);
+    };
+    window.addEventListener('pointermove', move);
+    window.addEventListener('pointerup', up);
+  };
+  return (
+    <div className="twk-num">
+      <span className="twk-num-lbl" onPointerDown={onScrubStart}>{label}</span>
+      <input type="number" value={value} min={min} max={max} step={step}
+             onChange={(e) => onChange(clamp(Number(e.target.value)))} />
+      {unit && <span className="twk-num-unit">{unit}</span>}
+    </div>
+  );
+}
+
+function TweakColor({ label, value, onChange }) {
+  return (
+    <div className="twk-row twk-row-h">
+      <div className="twk-lbl"><span>{label}</span></div>
+      <input type="color" className="twk-swatch" value={value}
+             onChange={(e) => onChange(e.target.value)} />
+    </div>
+  );
+}
+
+function TweakButton({ label, onClick, secondary = false }) {
+  return (
+    <button type="button" className={secondary ? 'twk-btn secondary' : 'twk-btn'}
+            onClick={onClick}>{label}</button>
+  );
+}
+
+Object.assign(window, {
+  useTweaks, TweaksPanel, TweakSection, TweakRow,
+  TweakSlider, TweakToggle, TweakRadio, TweakSelect,
+  TweakText, TweakNumber, TweakColor, TweakButton,
+});
+
+
+// ===== app-shell.jsx =====
+// app-shell.jsx — Claude desktop chrome (sidebar + main pane)
+
+const Sidebar = ({ active, onNav, mode, onMode, freeBadgeProminence, showCoworkNudge }) => {
+  const chatItems = [
+    { id: 'new',       label: 'New chat',  icon: 'plus' },
+    { id: 'projects',  label: 'Projects',  icon: 'folder' },
+    { id: 'artifacts', label: 'Artifacts', icon: 'sparkle' },
+    { id: 'customize', label: 'Customize', icon: 'sliders' },
+  ];
+  const coworkItems = [
+    { id: 'new-task',  label: 'New task',     icon: 'plus' },
+    { id: 'projects',  label: 'Projects',     icon: 'folder' },
+    { id: 'scheduled', label: 'Scheduled',    icon: 'clock' },
+    { id: 'artifacts', label: 'Live artifacts', icon: 'sparkle' },
+    { id: 'dispatch',  label: 'Dispatch',     icon: 'beaker', tag: 'Beta' },
+    { id: 'customize', label: 'Customize',    icon: 'sliders' },
+  ];
+  const items = mode === 'cowork' ? coworkItems : chatItems;
+  const recents = mode === 'cowork'
+    ? ['Weekly to-do sweep', 'Daily standup digest', 'PR review nudges']
+    : ['Q2 planning notes', 'Onboarding draft v3', 'Refactor auth flow', 'Pricing page copy'];
+  return (
+    <aside className="cd-sidebar">
+      <div className="cd-sb-top">
+        <div className="cd-logo">
+          <svg width="22" height="22" viewBox="0 0 22 22" fill="none">
+            <path d="M5.5 16L9 6.5h2.5L15 16h-2.2l-.7-2H8.4l-.7 2H5.5zm3.5-3.7h2.6L10.3 8.4 9 12.3z" fill="#D97757"/>
+          </svg>
+          <span>Claude</span>
+        </div>
+      </div>
+      <div className="cd-mode-toggle">
+        <button className={`cd-mode ${mode === 'chat' ? 'is-on' : ''}`} onClick={() => onMode('chat')} title="Chat">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h10a1 1 0 011 1v5a1 1 0 01-1 1H7l-3 2.5V11H3V5a1 1 0 011-1z"/></svg>
+          {mode === 'chat' && <span>Chat</span>}
+        </button>
+        <button className={`cd-mode ${mode === 'cowork' ? 'is-on' : ''}`} onClick={() => onMode('cowork')} title="Cowork">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="2.5" y="3" width="11" height="2.5" rx="0.6"/><path d="M4.5 7.5h7M4.5 10h5"/><path d="M11 10l1.2 1.2L14 9.6" strokeWidth="1.6"/></svg>
+          {mode === 'cowork' && <>
+            <span>Cowork</span>
+            {freeBadgeProminence === 'loud' && <span className="cd-mode-pill">FREE</span>}
+          </>}
+        </button>
+        <button className="cd-mode-quiet" title="Inspect">
+          <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3.5L2 8l3 4.5M11 3.5L14 8l-3 4.5"/></svg>
+        </button>
+      </div>
+      <nav className="cd-nav">
+        {items.map(it => (
+          <button key={it.id} className={`cd-nav-item ${active === it.id ? 'is-active' : ''}`} onClick={() => onNav(it.id)}>
+            <NavIcon name={it.icon} />
+            <span>{it.label}</span>
+            {it.tag && <span className="cd-nav-tag">{it.tag}</span>}
+          </button>
+        ))}
+      </nav>
+      <div className="cd-sb-recent">
+        <div className="cd-sb-section">{mode === 'cowork' ? 'Tasks' : 'Recents'}</div>
+        {recents.map((c, i) => (
+          <button key={i} className={`cd-recent ${i === 0 ? 'is-active' : ''}`}>{c}</button>
+        ))}
+      </div>
+      <div className="cd-sb-bottom">
+        <div className="cd-user">
+          <div className="cd-avatar">A</div>
+          <div className="cd-user-meta">
+            <div className="cd-user-name">Alex Chen</div>
+            <div className="cd-user-plan">Free plan</div>
+          </div>
+          <button className="cd-upgrade">Upgrade</button>
+        </div>
+      </div>
+    </aside>
+  );
+};
+
+const NavIcon = ({ name }) => {
+  const common = { width: 16, height: 16, viewBox: '0 0 16 16', fill: 'none', stroke: 'currentColor', strokeWidth: 1.4, strokeLinecap: 'round', strokeLinejoin: 'round' };
+  switch (name) {
+    case 'plus':    return <svg {...common}><path d="M8 3v10M3 8h10"/></svg>;
+    case 'message': return <svg {...common}><path d="M3 4h10v7H7l-3 2.5V11H3V4z"/></svg>;
+    case 'folder':  return <svg {...common}><path d="M2.5 5a1 1 0 011-1H6l1.5 1.5h5a1 1 0 011 1V12a1 1 0 01-1 1h-9a1 1 0 01-1-1V5z"/></svg>;
+    case 'sparkle': return <svg {...common}><path d="M5 5 L8 4 L11 5 L12 8 L11 11 L8 12 L5 11 L4 8 Z"/></svg>;
+    case 'clock':   return <svg {...common}><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg>;
+    case 'sliders': return <svg {...common}><path d="M3 4h10M3 8h10M3 12h10"/><circle cx="6" cy="4" r="1.3" fill="currentColor"/><circle cx="10" cy="8" r="1.3" fill="currentColor"/><circle cx="5" cy="12" r="1.3" fill="currentColor"/></svg>;
+    case 'beaker':  return <svg {...common}><path d="M6 3h4M7 3v4l-3 5a1 1 0 001 1.5h6a1 1 0 001-1.5l-3-5V3"/></svg>;
+    case 'bot':     return <svg {...common}><rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01M5 13v1M11 13v1"/></svg>;
+    default: return null;
+  }
+};
+
+const TopBar = ({ title, onCowork }) => (
+  <header className="cd-topbar">
+    <div className="cd-tb-left">
+      <button className="cd-iconbtn" title="Toggle sidebar">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3"><rect x="2" y="2.5" width="10" height="9" rx="1.5"/><path d="M5.5 2.5v9"/></svg>
+      </button>
+      <div className="cd-breadcrumb">{title}</div>
+    </div>
+    <div className="cd-tb-right">
+      <button className="cd-iconbtn" title="Share">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><path d="M10 5l-6 3M10 9l-6-3"/><circle cx="11" cy="4" r="1.5"/><circle cx="11" cy="10" r="1.5"/><circle cx="3" cy="7" r="1.5"/></svg>
+      </button>
+      <button className="cd-iconbtn" title="More">
+        <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><circle cx="3.5" cy="7" r=".8"/><circle cx="7" cy="7" r=".8"/><circle cx="10.5" cy="7" r=".8"/></svg>
+      </button>
+    </div>
+  </header>
+);
+
+Object.assign(window, { Sidebar, TopBar });
+
+
+// ===== conversation.jsx =====
+// conversation.jsx — chat conversation with to-do response and Cowork upsell
+
+const SourceChip = ({ kind }) => {
+  const meta = {
+    slack:    { label: 'Slack',    color: '#E01E5A', icon: <SlackIcon /> },
+    linear:   { label: 'Linear',   color: '#5E6AD2', icon: <LinearIcon /> },
+    gmail:    { label: 'Gmail',    color: '#EA4335', icon: <GmailIcon /> },
+    calendar: { label: 'Calendar', color: '#1A73E8', icon: <CalIcon /> },
+  }[kind];
+  return (
+    <span className="src-chip" title={meta.label}>
+      <span className="src-chip-ico" style={{ color: meta.color }}>{meta.icon}</span>
+      <span className="src-chip-label">{meta.label}</span>
+    </span>
+  );
+};
+
+function SlackIcon()  { return <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 15.5a2 2 0 11-2-2h2v2zm1 0a2 2 0 014 0v5a2 2 0 11-4 0v-5zm2-8a2 2 0 11-2-2h2v2zm0 1a2 2 0 010 4h-5a2 2 0 110-4h5zm8 2a2 2 0 112 2h-2v-2zm-1 0a2 2 0 11-4 0v-5a2 2 0 114 0v5zm-2 8a2 2 0 112 2h-2v-2zm0-1a2 2 0 010-4h5a2 2 0 110 4h-5z"/></svg>; }
+function LinearIcon() { return <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M1.2 14.5L9.5 22.8a12 12 0 01-8.3-8.3zm-.4-3.6l11.3 11.3a12 12 0 01-3.5-.7L.5 14.4a12 12 0 01.3-3.5zm.6-3l13.7 13.7a12 12 0 01-2.4-1L1.4 9.9q.3-1 1-2zm1.6-2.5l15.6 15.6a12 12 0 01-1.7-1.4L3.5 6.7q.6-.7 1.5-1.3zM6.7 3.5L20.5 17.3a12 12 0 11-13.8-13.8z"/></svg>; }
+function GmailIcon()  { return <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M22 6.5l-10 6.3L2 6.5V18a2 2 0 002 2h16a2 2 0 002-2V6.5zM20 4H4a2 2 0 00-2 2l10 6.3L22 6a2 2 0 00-2-2z"/></svg>; }
+function CalIcon()    { return <svg width="10" height="10" viewBox="0 0 24 24" fill="currentColor"><path d="M7 2v2H4a2 2 0 00-2 2v14a2 2 0 002 2h16a2 2 0 002-2V6a2 2 0 00-2-2h-3V2h-2v2H9V2H7zm13 8v10H4V10h16z"/></svg>; }
+
+const UserMessage = ({ children }) => (
+  <div className="msg msg-user">
+    <div className="msg-user-bubble">{children}</div>
+  </div>
+);
+
+const ClaudeMessage = ({ children }) => (
+  <div className="msg msg-claude">
+    <div className="msg-claude-mark">
+      <svg width="14" height="14" viewBox="0 0 22 22" fill="none">
+        <path d="M5.5 16L9 6.5h2.5L15 16h-2.2l-.7-2H8.4l-.7 2H5.5zm3.5-3.7h2.6L10.3 8.4 9 12.3z" fill="#D97757"/>
+      </svg>
+    </div>
+    <div className="msg-claude-body">{children}</div>
+  </div>
+);
+
+const ConnectorRow = () => (
+  <div className="connector-row">
+    <span className="connector-row-label">Searched</span>
+    {['slack', 'linear', 'gmail', 'calendar'].map(k => <SourceChip key={k} kind={k} />)}
+    <span className="connector-row-meta">· 4 sources · 2,847 items</span>
+  </div>
+);
+
+const TodoItem = ({ children, sources, dim }) => (
+  <li className={`todo-item ${dim ? 'is-dim' : ''}`}>
+    <div className="todo-item-text">{children}</div>
+    {sources && (
+      <div className="todo-item-srcs">
+        {sources.map(s => <SourceChip key={s} kind={s} />)}
+      </div>
+    )}
+  </li>
+);
+
+const TodoResponse = () => (
+  <div className="todo-response">
+    <ConnectorRow />
+    <p>Here's your week at a glance. Today is Tuesday <strong>4/28</strong> — I focused on what's on your calendar through Sunday plus open threads needing responses.</p>
+
+    <h3 className="todo-h"><span className="todo-dot todo-dot-red" /> Top priority — today/tomorrow</h3>
+    <p className="todo-sub">Ref work (commitments you made to Matt)</p>
+    <ul className="todo-list">
+      <TodoItem sources={['calendar', 'slack']}>
+        <strong>First-pass PDF to Matt by Wed 9am.</strong> You have "Get PDF Ready" blocked today 3:30–5pm — that's your window.
+      </TodoItem>
+      <TodoItem sources={['slack']}>
+        <strong>Draft 1-pager / messaging synthesis by EOW.</strong>
+      </TodoItem>
+      <TodoItem sources={['calendar']}>
+        <strong>Join Maxim landing-page calls Wed + Thu</strong> (you confirmed with Matt).
+      </TodoItem>
+      <TodoItem dim sources={['gmail']}>
+        Note: the user survey for Matt's newsletter got pushed to <em>next</em> Thursday — you have an extra week.
+      </TodoItem>
+    </ul>
+
+    <h3 className="todo-h"><span className="todo-dot todo-dot-amber" /> This week — needs response</h3>
+    <ul className="todo-list">
+      <TodoItem sources={['linear']}>
+        <strong>ENG-2841 review.</strong> Sasha pinged you Friday on the auth refactor PR. 3 comments waiting.
+      </TodoItem>
+      <TodoItem sources={['gmail']}>
+        <strong>Reply to Priya re: Q3 hiring plan.</strong> Thread from Monday, she's blocked.
+      </TodoItem>
+      <TodoItem sources={['slack']}>
+        <strong>#design-review thread on the new pricing page</strong> — 7 unread, Devon @-mentioned you twice.
+      </TodoItem>
+    </ul>
+
+    <h3 className="todo-h"><span className="todo-dot todo-dot-blue" /> Heads up — later in the week</h3>
+    <ul className="todo-list">
+      <TodoItem sources={['calendar']}>
+        Friday 1:1 with Jordan moved to <strong>Thursday 4pm</strong>.
+      </TodoItem>
+      <TodoItem sources={['linear']}>
+        2 Linear tickets you own ship Friday: <strong>GROWTH-512</strong>, <strong>GROWTH-518</strong>.
+      </TodoItem>
+    </ul>
+  </div>
+);
+
+const UpsellChip = ({ onClick, badgeProminence }) => (
+  <div className="upsell upsell-chip">
+    <button className="upsell-chip-btn" onClick={onClick}>
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01"/>
+      </svg>
+      <span>Run this every Monday with a Cowork</span>
+      <span className="upsell-chip-arrow">→</span>
+    </button>
+    <span className={`upsell-free-tag ${badgeProminence === 'loud' ? 'is-loud' : ''}`}>
+      {badgeProminence === 'loud' ? '★ FREE on your plan' : 'free'}
+    </span>
+  </div>
+);
+
+const UpsellCard = ({ onClick, badgeProminence }) => (
+  <div className="upsell upsell-card">
+    <div className="upsell-card-head">
+      <div className="upsell-card-icon">
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" stroke="#D97757" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+          <rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01M5 13v1M11 13v1"/>
+        </svg>
+      </div>
+      <div className="upsell-card-titles">
+        <div className="upsell-card-title">Want this every Monday morning?</div>
+        <div className="upsell-card-sub">Set up a Cowork — Claude will run this same sweep on a schedule and DM you the result in Slack.</div>
+      </div>
+    </div>
+    <div className="upsell-card-row">
+      <div className="upsell-card-meta">
+        <span className="upsell-meta-item">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round"><circle cx="8" cy="8" r="5.5"/><path d="M8 5v3l2 1.5"/></svg>
+          Daily, 8:00 AM
+        </span>
+        <span className="upsell-meta-item">
+          <svg width="11" height="11" viewBox="0 0 24 24" fill="currentColor"><path d="M5.5 15.5a2 2 0 11-2-2h2v2zm1 0a2 2 0 014 0v5a2 2 0 11-4 0v-5zm2-8a2 2 0 11-2-2h2v2zm0 1a2 2 0 010 4h-5a2 2 0 110-4h5zm8 2a2 2 0 112 2h-2v-2zm-1 0a2 2 0 11-4 0v-5a2 2 0 114 0v5zm-2 8a2 2 0 112 2h-2v-2zm0-1a2 2 0 010-4h5a2 2 0 110 4h-5z"/></svg>
+          Delivers to Slack
+        </span>
+        <span className="upsell-meta-item">
+          <SourceChip kind="slack" /><SourceChip kind="linear" /><SourceChip kind="gmail" /><SourceChip kind="calendar" />
+        </span>
+      </div>
+      <div className="upsell-card-actions">
+        <span className={`upsell-quota-badge ${badgeProminence === 'loud' ? 'is-loud' : ''}`}>
+          {badgeProminence === 'loud' && <span className="upsell-quota-star">★</span>}
+          <strong>0 of 1</strong> Cowork tasks used
+        </span>
+        <button className="upsell-card-cta" onClick={onClick}>
+          Go to Cowork
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+const UpsellBanner = ({ onClick, badgeProminence }) => (
+  <div className="upsell upsell-banner">
+    <div className="upsell-banner-icon">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#D97757" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round">
+        <rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01"/>
+      </svg>
+    </div>
+    <div className="upsell-banner-text">
+      Want this every week? <strong>Set this up as a recurring Cowork task</strong>
+      {badgeProminence === 'loud'
+        ? <span className="upsell-banner-pill is-loud">★ FREE — 1 task on your plan</span>
+        : <span className="upsell-banner-pill">free</span>}
+    </div>
+    <button className="upsell-banner-cta" onClick={onClick}>Set up →</button>
+  </div>
+);
+
+const Composer = () => (
+  <div className="composer-wrap">
+    <div className="composer">
+      <div className="composer-textarea">Reply to Claude…</div>
+      <div className="composer-row">
+        <div className="composer-tools">
+          <button className="composer-tool"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M8 3v10M3 8h10"/></svg></button>
+          <button className="composer-tool"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3"><rect x="3" y="3" width="10" height="10" rx="2"/></svg> Tools</button>
+          <button className="composer-tool">Sonnet 4.5 ▾</button>
+        </div>
+        <button className="composer-send" disabled>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </div>
+    <div className="composer-foot">Claude can make mistakes. Consider checking important information.</div>
+  </div>
+);
+
+Object.assign(window, { UserMessage, ClaudeMessage, TodoResponse, UpsellChip, UpsellCard, UpsellBanner, Composer, SourceChip });
+
+
+// ===== cowork-setup.jsx =====
+// cowork-setup.jsx — three setup flow variants
+
+const SetupModal = ({ onClose, onConfirm, variant }) => {
+  const [name, setName] = React.useState('weekly-todo-sweep');
+  const [description, setDescription] = React.useState('Surface my real to-dos for the week from Slack, Linear, Gmail and Calendar');
+  const [prompt, setPrompt] = React.useState(
+    "Look across my Slack, Linear, Calendar, and Gmail and figure out my to-dos for the week. Group by priority, attribute sources, and flag what needs a response."
+  );
+  const [frequency, setFrequency] = React.useState('weekly-mon');
+
+  const Wrap = variant === 'panel' ? SidePanelWrap : ModalWrap;
+  const canSave = name.trim().length > 0 && description.trim().length > 0 && prompt.trim().length > 0;
+
+  return (
+    <Wrap onClose={onClose}>
+      <div className="task-modal-head">
+        <div className="task-modal-title">Create scheduled task</div>
+        <button className="task-modal-x" onClick={onClose} aria-label="Close">
+          <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M3 3l10 10M13 3L3 13"/></svg>
+        </button>
+      </div>
+
+      <div className="task-modal-body">
+        <div className="task-field">
+          <label className="task-label">Name <span className="task-req">*</span></label>
+          <input className="task-input" value={name} onChange={e => setName(e.target.value)} placeholder="daily-briefing" />
+        </div>
+
+        <div className="task-field">
+          <label className="task-label">Description <span className="task-req">*</span></label>
+          <input className="task-input" value={description} onChange={e => setDescription(e.target.value)} placeholder="Summarize my calendar and inbox for the day" />
+        </div>
+
+        <div className="task-prompt-shell">
+          <textarea
+            className="task-prompt-textarea"
+            value={prompt}
+            onChange={e => setPrompt(e.target.value)}
+            placeholder="Check my Google Calendar for today's meetings and summarize my unread emails. Highlight anything urgent."
+            rows={5}
+          />
+          <div className="task-prompt-foot">
+            <div className="task-prompt-foot-l">
+              <button className="task-chip">
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+                  <path d="M2 5a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1V12a1 1 0 01-1 1H3a1 1 0 01-1-1V5z"/>
+                </svg>
+                <span>Work in a project</span>
+              </button>
+              <button className="task-chip">
+                <span>Ask</span>
+                <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+            </div>
+            <button className="task-chip task-chip-quiet">
+              <span>Default model</span>
+              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="task-field task-field-narrow">
+          <label className="task-label">Frequency</label>
+          <div className="task-select-wrap">
+            <select className="task-select" value={frequency} onChange={e => setFrequency(e.target.value)}>
+              <option value="manual">Manual</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays</option>
+              <option value="weekly-mon">Weekly · Mondays</option>
+              <option value="weekly-fri">Weekly · Fridays</option>
+              <option value="monthly">Monthly</option>
+            </select>
+            <svg className="task-select-caret" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div className="task-modal-foot">
+        <button className="task-btn task-btn-secondary" onClick={onClose}>Cancel</button>
+        <button
+          className={`task-btn task-btn-primary ${canSave ? '' : 'is-disabled'}`}
+          onClick={canSave ? onConfirm : undefined}
+          disabled={!canSave}
+        >
+          Save
+        </button>
+      </div>
+    </Wrap>
+  );
+};
+
+const ModalWrap = ({ children, onClose }) => (
+  <div className="setup-overlay" onClick={onClose}>
+    <div className="task-modal" onClick={e => e.stopPropagation()}>{children}</div>
+  </div>
+);
+
+const SidePanelWrap = ({ children, onClose }) => (
+  <div className="setup-panel-overlay" onClick={onClose}>
+    <div className="setup-panel" onClick={e => e.stopPropagation()}>{children}</div>
+  </div>
+);
+
+const ChatSetup = ({ onClose, onConfirm }) => {
+  const [step, setStep] = React.useState(0);
+  const steps = [
+    {
+      claude: <>Great — I'll set this up as a Cowork task. First, when should I run this?</>,
+      options: [
+        { id: 'daily', label: 'Every weekday morning' },
+        { id: 'weekly', label: 'Monday mornings' },
+        { id: 'daily-all', label: 'Every day, 7 days a week' },
+      ],
+    },
+    {
+      claude: <>Got it — <strong>Mondays at 8 AM</strong>. Where should I deliver the digest?</>,
+      options: [
+        { id: 'slack', label: 'Slack DM (@alex.chen)' },
+        { id: 'email', label: 'Email — Pro only', disabled: true },
+        { id: 'chat',  label: 'Back into this chat — Pro only', disabled: true },
+      ],
+    },
+    {
+      claude: <>Last thing — I'll use the same Slack, Linear, Gmail, and Calendar connections from this chat. Should I include anything you flag as <em>private</em> in Slack?</>,
+      options: [
+        { id: 'no', label: 'No, skip private channels' },
+        { id: 'yes', label: 'Yes, include all channels I have access to' },
+      ],
+    },
+  ];
+
+  return (
+    <div className="chat-setup">
+      <div className="chat-setup-head">
+        <div className="chat-setup-head-l">
+          <div className="msg-claude-mark"><svg width="12" height="12" viewBox="0 0 22 22" fill="none"><path d="M5.5 16L9 6.5h2.5L15 16h-2.2l-.7-2H8.4l-.7 2H5.5zm3.5-3.7h2.6L10.3 8.4 9 12.3z" fill="#D97757"/></svg></div>
+          <div>
+            <div className="chat-setup-title">Setting up your Cowork</div>
+            <div className="chat-setup-sub">Step {step + 1} of {steps.length}</div>
+          </div>
+        </div>
+        <button className="setup-x" onClick={onClose}>×</button>
+      </div>
+      <div className="chat-setup-body">
+        <div className="chat-setup-msg">{steps[step].claude}</div>
+        <div className="chat-setup-options">
+          {steps[step].options.map(o => (
+            <button
+              key={o.id}
+              className={`chat-setup-opt ${o.disabled ? 'is-disabled' : ''}`}
+              disabled={o.disabled}
+              onClick={() => step < steps.length - 1 ? setStep(step + 1) : onConfirm()}
+            >
+              {o.label}
+              {!o.disabled && <span className="chat-setup-opt-arrow">→</span>}
+            </button>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+Object.assign(window, { SetupModal, ChatSetup });
+
+
+// ===== cowork-tab.jsx =====
+// cowork-tab.jsx — Cowork landing screen showing 1 free task running
+
+const CoworkTab = ({ taskCreated, freeBadgeProminence }) => {
+  return (
+    <div className="cw-tab">
+      <div className="cw-tab-head">
+        <div className="cw-tab-titles">
+          <div className="cw-tab-eyebrow">
+            <span className="cw-tab-eyebrow-dot" />
+            Cowork
+            <span className={`cw-tab-eyebrow-pill ${freeBadgeProminence === 'loud' ? 'is-loud' : ''}`}>
+              {freeBadgeProminence === 'loud' ? '★ FREE TIER' : 'Free tier'}
+            </span>
+          </div>
+          <h1 className="cw-tab-h1">Try Cowork for free.</h1>
+          <p className="cw-tab-lead">
+            Hand off recurring work to Claude — research, summaries, digests, drafts, or anything else you'd rather not do by hand. Run it once for free, then schedule it to run on its own.
+          </p>
+        </div>
+
+        <div className="cw-tab-quota">
+          <div className="cw-tab-quota-num">
+            <span className="cw-tab-quota-used">{taskCreated ? 1 : 0}</span>
+            <span className="cw-tab-quota-total">/1</span>
+          </div>
+          <div className="cw-tab-quota-label">tasks used</div>
+          <div className="cw-tab-quota-bar"><div className="cw-tab-quota-fill" style={{ width: taskCreated ? '100%' : '0%' }} /></div>
+          <a href="#" className="cw-tab-upgrade-link">Upgrade for unlimited →</a>
+        </div>
+      </div>
+
+      {taskCreated ? (
+        <div className="cw-tab-section">
+          <div className="cw-tab-section-head">
+            <h2>Your free Cowork</h2>
+            <span className="cw-tab-section-count">1 of 1 used · locked</span>
+          </div>
+          <UsedTaskCard />
+        </div>
+      ) : (
+        <div className="cw-tab-section">
+          <div className="cw-tab-section-head">
+            <h2>USE A COWORK TASK</h2>
+            <span className="cw-tab-section-count">1 free task to spend</span>
+          </div>
+          <div className="cw-empty">
+            <div className="cw-empty-icon">
+              <svg width="36" height="36" viewBox="0 0 16 16" fill="none" stroke="rgba(217,119,87,.7)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
+                <rect x="3" y="5" width="10" height="8" rx="2"/><path d="M8 5V3M6 9h.01M10 9h.01M5 13v1M11 13v1"/>
+              </svg>
+            </div>
+            <div className="cw-empty-title">No Cowork tasks yet</div>
+            <div className="cw-empty-sub">
+              Cowork tasks always start from a chat. Open <strong>Chat</strong> in the sidebar to see how it works — once you've run something useful, you can promote it into a recurring task here.
+            </div>
+            <div className="cw-empty-cta">
+              <button className="cw-empty-btn" onClick={() => setView('chat')}>
+                Go to Chat
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3l5 5-5 5"/></svg>
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
+
+      {taskCreated && <UpgradeCallout />}
+    </div>
+  );
+};
+
+const InlineCoworkEditor = ({ locked }) => {
+  const [name, setName]               = React.useState('weekly-todo-sweep');
+  const [description, setDescription] = React.useState('Surface my real to-dos for the week from Slack, Linear, Gmail and Calendar');
+  const [prompt, setPrompt]           = React.useState(
+    "Look across my Slack, Linear, Calendar, and Gmail and figure out my to-dos for the week. Group by priority, attribute sources, and flag what needs a response."
+  );
+  const [frequency, setFrequency] = React.useState('weekly-mon');
+
+  return (
+    <div className={`cw-editor ${locked ? 'is-locked' : ''}`}>
+      {locked && (
+        <div className="cw-editor-locked-bar">
+          <div className="cw-editor-locked-bar-text">
+            <strong>This task is locked.</strong> You've used your 1 free Cowork. Upgrade to Pro to edit, schedule, and create more.
+          </div>
+          <button className="cw-editor-locked-bar-cta">
+            Upgrade to Pro
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3l5 5-5 5"/></svg>
+          </button>
+        </div>
+      )}
+
+      <div className="cw-editor-head">
+        <div className="cw-editor-title">
+          {locked ? 'Weekly to-do sweep' : 'New scheduled task'}
+          <span className={`cw-editor-state ${locked ? 'is-locked' : 'is-draft'}`}>
+            {locked ? (
+              <>
+                <svg width="10" height="10" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>
+                Locked
+              </>
+            ) : 'Draft'}
+          </span>
+        </div>
+      </div>
+
+      <div className={`cw-editor-body ${locked ? 'is-locked' : ''}`} aria-disabled={locked}>
+        <div className="task-field">
+          <label className="task-label">Name <span className="task-req">*</span></label>
+          <input className="task-input" value={name} onChange={e => setName(e.target.value)} disabled={locked} />
+        </div>
+
+        <div className="task-field">
+          <label className="task-label">Description <span className="task-req">*</span></label>
+          <input className="task-input" value={description} onChange={e => setDescription(e.target.value)} disabled={locked} />
+        </div>
+
+        <div className="task-prompt-shell">
+          <textarea
+            className="task-prompt-textarea"
+            value={prompt}
+            onChange={e => setPrompt(e.target.value)}
+            rows={5}
+            disabled={locked}
+          />
+          <div className="task-prompt-foot">
+            <div className="task-prompt-foot-l">
+              <button className="task-chip" disabled={locked}>
+                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1V12a1 1 0 01-1 1H3a1 1 0 01-1-1V5z"/></svg>
+                <span>Work in a project</span>
+              </button>
+              <button className="task-chip" disabled={locked}>
+                <span>Ask</span>
+                <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+              </button>
+            </div>
+            <button className="task-chip task-chip-quiet" disabled={locked}>
+              <span>Default model</span>
+              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+            </button>
+          </div>
+        </div>
+
+        <div className="task-field task-field-narrow">
+          <label className="task-label">Frequency</label>
+          <div className="task-select-wrap">
+            <select className="task-select" value={frequency} onChange={e => setFrequency(e.target.value)} disabled={locked}>
+              <option value="manual">Manual</option>
+              <option value="daily">Daily</option>
+              <option value="weekdays">Weekdays</option>
+              <option value="weekly-mon">Weekly · Mondays</option>
+              <option value="weekly-fri">Weekly · Fridays</option>
+              <option value="monthly">Monthly</option>
+            </select>
+            <svg className="task-select-caret" width="11" height="11" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+          </div>
+        </div>
+      </div>
+
+      <div className="cw-editor-foot">
+        <div className="cw-editor-foot-left">
+          {locked
+            ? <>Next run paused · <strong>upgrade to resume</strong></>
+            : <>Uses your <strong>1 free</strong> Cowork run. You can test it once before scheduling.</>}
+        </div>
+        <div className="cw-editor-foot-actions">
+          {locked ? (
+            <>
+              <button className="task-btn task-btn-secondary" disabled>Edit</button>
+              <button className="task-btn task-btn-secondary" disabled>Run now</button>
+            </>
+          ) : (
+            <>
+              <button className="task-btn task-btn-secondary">Cancel</button>
+              <button className="task-btn task-btn-primary">Save &amp; test run</button>
+            </>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const UpgradeCallout = () => (
+  <div className="cw-tab-section">
+    <div className="cw-upgrade">
+      <div className="cw-upgrade-row">
+        <div>
+          <div className="cw-upgrade-eyebrow">
+            <span className="cw-upgrade-eyebrow-dot" />
+            Free test used · 1 of 1
+          </div>
+          <h2 className="cw-upgrade-title">Keep Claude on the clock — every day, every week.</h2>
+          <p className="cw-upgrade-sub">
+            You've spent your one free Cowork run. Upgrade to Pro for unlimited recurring tasks across all your connected tools, with custom schedules and delivery.
+          </p>
+        </div>
+        <div className="cw-upgrade-cta-col">
+          <button className="cw-upgrade-cta">
+            Upgrade to Pro
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3l5 5-5 5"/></svg>
+          </button>
+          <div className="cw-upgrade-price"><strong>$20</strong> / month · cancel anytime</div>
+        </div>
+      </div>
+
+      <div className="cw-upgrade-examples-label">What you could automate next</div>
+      <div className="cw-upgrade-examples">
+        {EXAMPLE_TASKS.map((ex, i) => (
+          <button key={i} className="cw-upgrade-ex">
+            <div className="cw-upgrade-ex-cadence">{ex.cadence}</div>
+            <div className="cw-upgrade-ex-title">{ex.title}</div>
+            <div className="cw-upgrade-ex-sub">{ex.sub}</div>
+            <div className="cw-upgrade-ex-srcs">
+              {ex.srcs.map((s, j) => <SourceChip key={j} kind={s} />)}
+            </div>
+          </button>
+        ))}
+      </div>
+    </div>
+  </div>
+);
+
+const EXAMPLE_TASKS = [
+  {
+    cadence: 'Every weekday · 8am',
+    title:   'Morning inbox triage',
+    sub:     'Surface threads needing a reply, draft responses, and flag what can wait.',
+    srcs:    ['gmail', 'slack'],
+  },
+  {
+    cadence: 'Every Friday · 4pm',
+    title:   'Weekly status digest',
+    sub:     'Pull shipped work from Linear and turn it into a weekly note for your team.',
+    srcs:    ['linear', 'slack'],
+  },
+  {
+    cadence: 'Every Sunday · 6pm',
+    title:   'Week-ahead briefing',
+    sub:     'Prep notes for every meeting on your calendar, with context from past threads.',
+    srcs:    ['calendar', 'gmail'],
+  },
+];
+
+const TEMPLATES = [
+  { icon: '📨', title: 'Inbox triage',         sub: 'Daily summary of important threads' },
+  { icon: '📊', title: 'Sales pipeline digest', sub: 'Stalled deals + next steps from CRM' },
+  { icon: '🔍', title: 'Competitor watch',      sub: 'Weekly summary of changes' },
+  { icon: '📝', title: 'Standup composer',      sub: 'Auto-draft your daily standup' },
+];
+
+const CHAT_SUGGESTIONS = [
+  'Summarize my unread emails every morning',
+  'Track competitors’ changelogs each week',
+  'Draft my Friday status update from Linear',
+  'Brief me on tomorrow’s meetings every evening',
+];
+
+const ChatStartCard = () => (
+  <div className="cw-chat-start">
+    <div className="cw-chat-start-head">
+      <div className="msg-claude-mark" style={{margin:0}}>
+        <svg width="16" height="16" viewBox="0 0 22 22" fill="none"><path d="M5.5 16L9 6.5h2.5L15 16h-2.2l-.7-2H8.4l-.7 2H5.5zm3.5-3.7h2.6L10.3 8.4 9 12.3z" fill="#D97757"/></svg>
+      </div>
+      <div className="cw-chat-start-headings">
+        <h2 className="cw-chat-start-h1">Let's knock something off your list</h2>
+        <a href="#" className="cw-chat-start-link">Learn how to use Cowork safely.</a>
+      </div>
+    </div>
+
+    <div className="cw-chat-start-composer">
+      <div className="cw-chat-start-input">How can I help you today?</div>
+      <div className="cw-chat-start-row">
+        <div className="cw-chat-start-tools">
+          <button className="composer-tool" aria-label="Add">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
+          </button>
+          <button className="composer-tool">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1V12a1 1 0 01-1 1H3a1 1 0 01-1-1V5z"/></svg>
+            <span>Work in a project</span>
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+          <button className="composer-tool">
+            <span>Ask</span>
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+        </div>
+        <div className="cw-chat-start-tools">
+          <button className="composer-tool">
+            <span>Legacy Model</span>
+            <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+          </button>
+          <button className="cw-chat-start-send" aria-label="Voice">
+            <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M3.5 8a4.5 4.5 0 009 0M8 12.5V14"/></svg>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div className="cw-chat-start-suggestions">
+      {CHAT_SUGGESTIONS.map((s, i) => (
+        <button key={i} className="cw-chat-start-suggestion">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          <span>{s}</span>
+        </button>
+      ))}
+    </div>
+  </div>
+);
+
+const UsedTaskCard = () => (
+  <div className="cw-used">
+    <div className="cw-used-bar">
+      <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>
+      <span>Free Cowork used · locked</span>
+      <span className="cw-used-bar-spacer" />
+      <span className="cw-used-bar-meta">Test ran successfully · 12s ago</span>
+    </div>
+
+    <div className="cw-used-head">
+      <div className="cw-used-titles">
+        <div className="cw-used-eyebrow">
+          <span className="cw-used-eyebrow-dot" />
+          You ran this once
+        </div>
+        <h3 className="cw-used-name">Weekly to-do sweep</h3>
+        <span className="cw-used-id">cwk_8f3a2c</span>
+      </div>
+    </div>
+
+    <div className="cw-used-prompt">
+      <div className="cw-used-prompt-label">
+        <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4h10M3 8h10M3 12h7"/></svg>
+        Prompt
+      </div>
+      <div className="cw-used-prompt-text">
+        Look across my Slack, Linear, Calendar, and Gmail and figure out my to-dos for the week. Group by priority, attribute sources, and flag what needs a response.
+      </div>
+      <div className="cw-used-prompt-srcs">
+        <span className="cw-used-prompt-srcs-label">Sources</span>
+        <div className="cw-used-prompt-srcs-list">
+          <SourceChip kind="slack" />
+          <SourceChip kind="linear" />
+          <SourceChip kind="gmail" />
+          <SourceChip kind="calendar" />
+        </div>
+      </div>
+    </div>
+
+    <div className="cw-used-meta-grid">
+      <div className="cw-used-meta-cell">
+        <div className="cw-used-meta-label">Schedule</div>
+        <div className="cw-used-meta-val is-paused">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M8 4v4l2.5 1.5"/></svg>
+          <span className="cw-used-meta-strike">Mon at 8:00 AM · PST</span>
+        </div>
+      </div>
+      <div className="cw-used-meta-cell">
+        <div className="cw-used-meta-label">Delivers to</div>
+        <div className="cw-used-meta-val is-paused">
+          <SourceChip kind="slack" /> <span style={{color:'var(--text-3)'}}>@alex.chen</span>
+        </div>
+      </div>
+      <div className="cw-used-meta-cell">
+        <div className="cw-used-meta-label">Next run</div>
+        <div className="cw-used-meta-val is-paused">
+          Paused — upgrade to resume
+        </div>
+      </div>
+    </div>
+
+    <div className="cw-used-foot">
+      <div className="cw-used-foot-left">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="var(--accent)" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 1.5l1.8 4 4.2.5-3 3 .8 4.2L8 11.3 4.2 13.2 5 9 2 6l4.2-.5z"/></svg>
+        <span><strong>Upgrade to Pro</strong> to schedule this and create unlimited Coworks.</span>
+      </div>
+      <button className="cw-used-foot-cta">
+        Upgrade to Pro
+        <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3l5 5-5 5"/></svg>
+      </button>
+    </div>
+  </div>
+);
+
+const ActiveTaskCard = () => {
+  return (
+    <div className="cw-task">
+      <div className="cw-task-head">
+        <div className="cw-task-head-l">
+          <div className="cw-task-status">
+            <span className="cw-task-pulse" />
+            <span>Active</span>
+          </div>
+          <div className="cw-task-name">Weekly to-do sweep</div>
+          <div className="cw-task-id">cwk_8f3a2c</div>
+        </div>
+        <div className="cw-task-head-r">
+          <button className="cw-task-icon-btn" title="Pause">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4"><path d="M6 4v8M10 4v8"/></svg>
+          </button>
+          <button className="cw-task-icon-btn" title="Edit">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M11 3l2 2-7 7H4v-2l7-7z"/></svg>
+          </button>
+          <button className="cw-task-icon-btn" title="Delete">
+            <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5h10M5 5V3h6v2M6 8v4M10 8v4M5 5l1 9h4l1-9"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div className="cw-task-meta">
+        <div className="cw-task-meta-item">
+          <div className="cw-task-meta-label">Schedule</div>
+          <div className="cw-task-meta-val">Mon at 8:00 AM · PST</div>
+        </div>
+        <div className="cw-task-meta-item">
+          <div className="cw-task-meta-label">Sources</div>
+          <div className="cw-task-meta-val cw-task-meta-srcs">
+            <SourceChip kind="slack" /><SourceChip kind="linear" /><SourceChip kind="gmail" /><SourceChip kind="calendar" />
+          </div>
+        </div>
+        <div className="cw-task-meta-item">
+          <div className="cw-task-meta-label">Delivers to</div>
+          <div className="cw-task-meta-val">
+            <SourceChip kind="slack" /> <span style={{ color: 'rgba(255,255,255,.55)' }}>@alex.chen</span>
+          </div>
+        </div>
+        <div className="cw-task-meta-item">
+          <div className="cw-task-meta-label">Next run</div>
+          <div className="cw-task-meta-val">Mon, May 4 · in 6 days</div>
+        </div>
+      </div>
+
+    </div>
+  );
+};
+
+const TestRun = () => (
+  <div className="cw-test">
+    <div className="cw-test-head">
+      <div className="cw-test-success">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#7fc89a" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5 8.5l2 2 4-4.5"/></svg>
+        <span>Test run completed successfully</span>
+      </div>
+      <span className="cw-test-time">12 seconds ago · ran in 8.4s</span>
+    </div>
+
+    <div className="cw-test-trace">
+      <TraceStep done time="0.2s" label="Connected to Slack, Linear, Gmail, Calendar" />
+      <TraceStep done time="2.1s" label="Searched 2,847 items across 4 sources" />
+      <TraceStep done time="5.6s" label="Synthesized into prioritized to-do list" />
+      <TraceStep done time="8.4s" label="Delivered to Slack DM @alex.chen" />
+    </div>
+
+    <div className="cw-test-preview">
+      <div className="cw-test-preview-head">
+        <SourceChip kind="slack" />
+        <span className="cw-test-preview-channel">Direct message · Claude (Cowork) → @alex.chen</span>
+        <span className="cw-test-preview-time">Just now</span>
+      </div>
+      <div className="cw-test-preview-body">
+        <div className="cw-slack-msg">
+          <div className="cw-slack-msg-head">
+            <span className="cw-slack-bot">Claude</span>
+            <span className="cw-slack-bot-tag">APP</span>
+            <span className="cw-slack-time">10:32 AM</span>
+          </div>
+          <div className="cw-slack-msg-body">
+            <strong>Your week at a glance — Tue 4/28</strong><br/>
+            🔴 <strong>Top priority</strong> — First-pass PDF to Matt by Wed 9am · Draft 1-pager by EOW · Maxim landing-page calls Wed + Thu<br/>
+            🟡 <strong>Needs response</strong> — ENG-2841 review (Sasha) · Priya re: Q3 hiring · #design-review (7 unread)<br/>
+            🔵 <strong>Heads up</strong> — Jordan 1:1 moved to Thu 4pm · GROWTH-512, GROWTH-518 ship Friday
+            <div className="cw-slack-attach">Generated by your Cowork · <a>view full digest</a> · <a>edit schedule</a></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+);
+
+const TraceStep = ({ done, time, label }) => (
+  <div className="cw-trace">
+    <div className={`cw-trace-dot ${done ? 'is-done' : ''}`}>
+      {done && <svg width="8" height="8" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8.5l3 3 7-7"/></svg>}
+    </div>
+    <div className="cw-trace-label">{label}</div>
+    <div className="cw-trace-time">{time}</div>
+  </div>
+);
+
+const RunHistory = () => (
+  <div className="cw-history">
+    <div className="cw-history-row is-current">
+      <span className="cw-history-dot is-success" />
+      <span className="cw-history-when">Just now (test run)</span>
+      <span className="cw-history-result">Delivered · 23 items synthesized</span>
+      <span className="cw-history-dur">8.4s</span>
+    </div>
+    <div className="cw-history-empty">
+      Future runs will appear here. Next run <strong>Monday May 4 at 8:00 AM</strong>.
+    </div>
+  </div>
+);
+
+const PromptView = () => (
+  <div className="cw-prompt">
+    <div className="cw-prompt-label">System prompt (from your chat)</div>
+    <pre className="cw-prompt-pre">{`Look across my Slack, Linear, Calendar, and Gmail and figure out my to-dos for the week. Group items by priority (top / needs-response / heads-up), attribute each item to its source, and call out anything where I owe someone a reply. Today is {{today}}.`}</pre>
+    <div className="cw-prompt-edit">
+      <button className="cw-prompt-edit-btn">Edit prompt</button>
+      <span className="cw-prompt-edit-hint">Changes apply to the next scheduled run.</span>
+    </div>
+  </div>
+);
+
+Object.assign(window, { CoworkTab });
+
+
+
+</script>
+
+<script type="text/babel" data-presets="react">
+
+const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
+  "upsellStyle": "card",
+  "freeBadgeProminence": "medium"
+}/*EDITMODE-END*/;
+
+function App() {
+  const [t, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
+  const [view, setView]   = React.useState('cowork'); // 'chat' | 'cowork'
+  const [setupKind, setSetupKind] = React.useState(null); // null | 'modal' | 'panel' | 'chat' | 'picker'
+  const [taskCreated, setTaskCreated] = React.useState(false);
+  const [showToast, setShowToast]     = React.useState(false);
+
+  const openSetup = () => setSetupKind('picker');
+
+  // "Go to Cowork" CTA: skip setup, jump straight to Cowork tab,
+  // run the free test, and show the upgrade prompt with examples.
+  const onGoToCowork = () => {
+    setTaskCreated(true);
+    setView('cowork');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3500);
+  };
+
+  const onCreate = () => {
+    setSetupKind(null);
+    setTaskCreated(true);
+    setView('cowork');
+    setShowToast(true);
+    setTimeout(() => setShowToast(false), 3500);
+  };
+
+  return (
+    <div className="app">
+      <Sidebar
+        active={view}
+        mode={view}
+        onMode={(m) => setView(m)}
+        onNav={(id) => {
+          if (id === 'new-task') setView('cowork');
+          else if (id === 'new') setView('chat');
+        }}
+        freeBadgeProminence={t.freeBadgeProminence}
+      />
+      <main className="cd-main">
+        <TopBar title={view === 'chat' ? 'Weekly to-do sweep' : 'Cowork'} />
+
+        <div className="cd-content">
+          {view === 'chat' && (
+            <div className="conversation">
+              <UserMessage>
+                Can you look across my slack, linear, calendar, email and figure out my to-dos for the week?
+              </UserMessage>
+
+              <ClaudeMessage>
+                <TodoResponse />
+                {t.upsellStyle === 'chip'   && <UpsellChip   onClick={onGoToCowork} badgeProminence={t.freeBadgeProminence} />}
+                {t.upsellStyle === 'card'   && <UpsellCard   onClick={onGoToCowork} badgeProminence={t.freeBadgeProminence} />}
+                {t.upsellStyle === 'banner' && <UpsellBanner onClick={onGoToCowork} badgeProminence={t.freeBadgeProminence} />}
+              </ClaudeMessage>
+            </div>
+          )}
+
+          {view === 'cowork' && (
+            <CoworkTab taskCreated={taskCreated} freeBadgeProminence={t.freeBadgeProminence} />
+          )}
+
+          {view === 'chat' && <Composer />}
+        </div>
+
+        {showToast && (
+          <div className="confirm-toast">
+            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5 8.5l2 2 4-4.5"/></svg>
+            Free test ran successfully · 1 of 1 used
+          </div>
+        )}
+
+        {setupKind === 'picker' && (
+          <SetupPicker onClose={() => setSetupKind(null)} onPick={(k) => setSetupKind(k)} />
+        )}
+        {setupKind === 'modal' && (
+          <SetupModal variant="modal" onClose={() => setSetupKind(null)} onConfirm={onCreate} />
+        )}
+        {setupKind === 'panel' && (
+          <SetupModal variant="panel" onClose={() => setSetupKind(null)} onConfirm={onCreate} />
+        )}
+        {setupKind === 'chat' && (
+          <>
+            <div className="setup-overlay" onClick={() => setSetupKind(null)} style={{background:'rgba(0,0,0,0.35)'}} />
+            <ChatSetup onClose={() => setSetupKind(null)} onConfirm={onCreate} />
+          </>
+        )}
+      </main>
+
+      <TweaksPanel>
+        <TweakSection label="Cowork upsell" />
+        <TweakRadio
+          label="Suggestion style"
+          value={t.upsellStyle}
+          options={['chip', 'card', 'banner']}
+          onChange={(v) => setTweak('upsellStyle', v)}
+        />
+        <TweakRadio
+          label="Free-tier badge"
+          value={t.freeBadgeProminence}
+          options={['medium', 'loud']}
+          onChange={(v) => setTweak('freeBadgeProminence', v)}
+        />
+
+        <TweakSection label="Demo" />
+        <TweakButton onClick={() => setView(view === 'chat' ? 'cowork' : 'chat')}>
+          {view === 'chat' ? 'View Cowork tab →' : '← Back to chat'}
+        </TweakButton>
+        {taskCreated && (
+          <TweakButton onClick={() => { setTaskCreated(false); setView('chat'); }}>
+            Reset (delete task)
+          </TweakButton>
+        )}
+        <TweakButton onClick={() => setSetupKind('picker')}>
+          Open setup flow
+        </TweakButton>
+      </TweaksPanel>
+    </div>
+  );
+}
+
+const SetupPicker = ({ onClose, onPick }) => (
+  <div className="setup-picker" onClick={onClose}>
+    <div className="setup-picker-card" onClick={e => e.stopPropagation()}>
+      <div className="setup-picker-head">
+        <div className="setup-picker-title">How would you like to set this up?</div>
+        <div className="setup-picker-sub">Three flavors to choose from — pick what fits.</div>
+      </div>
+      <div className="setup-picker-options">
+        <button className="setup-picker-opt" onClick={() => onPick('modal')}>
+          <span className="setup-picker-opt-icon">🪟</span>
+          <span className="setup-picker-opt-title">Inline modal</span>
+          <span className="setup-picker-opt-sub">Quick form with all fields visible at once.</span>
+        </button>
+        <button className="setup-picker-opt" onClick={() => onPick('panel')}>
+          <span className="setup-picker-opt-icon">▶</span>
+          <span className="setup-picker-opt-title">Side panel</span>
+          <span className="setup-picker-opt-sub">Slides in from the right; chat stays visible.</span>
+        </button>
+        <button className="setup-picker-opt" onClick={() => onPick('chat')}>
+          <span className="setup-picker-opt-icon">💬</span>
+          <span className="setup-picker-opt-title">Conversational</span>
+          <span className="setup-picker-opt-sub">Claude walks you through it step-by-step.</span>
+        </button>
+      </div>
+    </div>
+  </div>
+);
+
+ReactDOM.createRoot(document.getElementById('root')).render(<App />);
+
+</script>
+</body>
+</html>
