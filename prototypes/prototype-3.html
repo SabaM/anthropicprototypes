@@ -1116,6 +1116,238 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
 }
 .cw-empty-btn:hover { background:var(--accent-2); }
 
+/* ---------- v2: pulsating chat CTA ---------- */
+.cw-try-chat-btn {
+  display:inline-flex;align-items:center;gap:8px;
+  margin-top:18px;padding:8px 14px;
+  background:rgba(127,200,154,0.10);
+  border:1px solid rgba(127,200,154,0.45);
+  border-radius:999px;
+  color:#7fc89a;font-size:12.5px;font-weight:500;cursor:pointer;
+  font-family:inherit;
+  transition:background 120ms ease, border-color 120ms ease;
+}
+.cw-try-chat-btn:hover {
+  background:rgba(127,200,154,0.18);
+  border-color:rgba(127,200,154,0.7);
+}
+.cw-try-chat-pulse {
+  width:8px;height:8px;border-radius:50%;
+  background:#7fc89a;
+  box-shadow:0 0 0 0 rgba(127,200,154,0.7);
+  animation:cwPulse 1.6s infinite;
+}
+@keyframes cwPulse {
+  0%   { box-shadow:0 0 0 0 rgba(127,200,154,0.7); }
+  70%  { box-shadow:0 0 0 8px rgba(127,200,154,0); }
+  100% { box-shadow:0 0 0 0 rgba(127,200,154,0); }
+}
+
+/* ---------- v2: quota locked tint ---------- */
+.cw-tab-quota.is-locked .cw-tab-quota-fill {
+  background:linear-gradient(90deg, #e89164, #d97757);
+}
+
+/* ---------- v2: top bar Reset button ---------- */
+.cd-reset-btn {
+  display:inline-flex;align-items:center;gap:5px;
+  background:transparent;border:1px solid var(--border-strong);
+  color:var(--text-2);font-size:12px;font-family:inherit;
+  padding:5px 10px;border-radius:6px;cursor:pointer;margin-right:6px;
+  transition:background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.cd-reset-btn:hover { background:rgba(255,255,255,0.04);color:var(--text);border-color:var(--text-3); }
+
+/* ---------- v2: task list ---------- */
+.cw-task-list { display:flex;flex-direction:column;gap:10px; }
+.cw-task-row {
+  background:var(--bg-elev-1);
+  border:1px solid var(--border-strong);
+  border-radius:12px;
+  padding:14px 16px;
+  animation:cwTaskIn 280ms ease;
+}
+@keyframes cwTaskIn {
+  from { opacity:0;transform:translateY(6px); }
+  to   { opacity:1;transform:translateY(0); }
+}
+.cw-task-row.is-running { border-color:rgba(217,119,87,0.4);background:rgba(217,119,87,0.04); }
+.cw-task-row.is-locked  { opacity:0.92; }
+.cw-task-row-head { display:flex;align-items:center;justify-content:space-between;gap:14px; }
+.cw-task-row-l { display:flex;align-items:center;gap:11px;min-width:0;flex:1; }
+.cw-task-row-r { display:flex;align-items:center;gap:6px;flex-shrink:0; }
+.cw-task-row-spin {
+  width:18px;height:18px;border-radius:50%;
+  border:2px solid rgba(217,119,87,0.18);border-top-color:var(--accent);
+  animation:cwSpin 0.9s linear infinite;flex-shrink:0;
+}
+@keyframes cwSpin { to { transform:rotate(360deg); } }
+.cw-task-row-check { display:flex;align-items:center;justify-content:center;width:18px;height:18px;flex-shrink:0; }
+.cw-task-row-titles { display:flex;flex-direction:column;gap:2px;min-width:0; }
+.cw-task-row-title {
+  font-size:13.5px;font-weight:500;color:var(--text);
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:540px;
+}
+.cw-task-row-status { font-size:12px;color:var(--text-3);display:flex;align-items:center;gap:6px; }
+.cw-task-row-dot { width:6px;height:6px;border-radius:50%;display:inline-block; }
+.cw-task-row-dot.is-running { background:var(--accent);animation:cwBlink 1.2s ease-in-out infinite; }
+.cw-task-row-dot.is-done    { background:#7fc89a; }
+@keyframes cwBlink { 0%,100% { opacity:1; } 50% { opacity:0.4; } }
+.cw-task-row-lock { color:var(--text-4);display:flex;align-items:center;margin-left:4px; }
+.cw-connector {
+  font-size:10.5px;letter-spacing:0.04em;text-transform:uppercase;font-weight:500;
+  padding:3px 7px;border-radius:4px;border:1px solid currentColor;
+}
+
+/* ---------- v2: cowork composer ---------- */
+.cw-composer-wrap {
+  position:sticky;bottom:0;
+  background:linear-gradient(180deg, transparent 0%, var(--bg-main) 22%);
+  padding:24px 0 20px;
+  margin-top:24px;
+}
+.cw-starter-chips {
+  display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;
+}
+.cw-starter-chip {
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  color:var(--text-2);font-size:12.5px;font-family:inherit;
+  padding:7px 12px;border-radius:999px;cursor:pointer;
+  transition:background 120ms ease, color 120ms ease, border-color 120ms ease;
+}
+.cw-starter-chip:hover {
+  background:var(--bg-elev-2);color:var(--text);border-color:var(--text-4);
+}
+.cw-starter-chip-arrow { color:var(--accent);font-weight:600; }
+.cw-pending-note {
+  display:inline-flex;align-items:center;gap:6px;
+  font-size:12px;color:var(--accent);
+  margin-bottom:8px;padding:5px 10px;
+  background:rgba(217,119,87,0.08);border-radius:6px;
+}
+.cw-composer-nudge {
+  font-size:12px;color:var(--text-3);margin-bottom:8px;text-align:center;
+}
+.cw-composer {
+  background:var(--bg-input);border:1px solid var(--border-strong);
+  border-radius:14px;padding:12px 14px;
+  transition:border-color 150ms ease;
+}
+.cw-composer:focus-within { border-color:rgba(217,119,87,0.4); }
+.cw-composer.is-locked { opacity:0.5;background:var(--bg-elev-1); }
+.cw-composer-textarea {
+  width:100%;background:transparent;border:none;outline:none;resize:none;
+  color:var(--text);font-family:inherit;font-size:14px;line-height:1.5;
+  padding:4px 0;margin-bottom:6px;
+}
+.cw-composer-textarea::placeholder { color:var(--text-4); }
+.cw-composer-row { display:flex;align-items:center;justify-content:space-between;gap:8px; }
+.cw-composer-tools { display:flex;align-items:center;gap:2px; }
+.cw-composer-send {
+  width:30px;height:30px;border-radius:8px;
+  background:var(--accent);border:none;color:#1f1e1c;cursor:pointer;
+  display:flex;align-items:center;justify-content:center;margin-left:4px;
+  transition:background 120ms ease;
+}
+.cw-composer-send:hover:not(:disabled) { background:var(--accent-2); }
+.cw-composer-send:disabled { background:rgba(217,119,87,0.25);cursor:not-allowed;color:rgba(31,30,28,0.5); }
+
+/* ---------- v2: upgrade slide-up ---------- */
+.cw-upgrade-card {
+  background:linear-gradient(135deg, rgba(217,119,87,0.12), rgba(217,119,87,0.04));
+  border:1px solid rgba(217,119,87,0.45);
+  border-radius:14px;
+  padding:18px 20px;margin-bottom:14px;
+  display:flex;align-items:center;justify-content:space-between;gap:18px;
+  animation:cwSlideUp 360ms cubic-bezier(0.2, 0.8, 0.3, 1);
+}
+@keyframes cwSlideUp {
+  from { opacity:0;transform:translateY(20px); }
+  to   { opacity:1;transform:translateY(0); }
+}
+.cw-upgrade-card-body { flex:1;min-width:0; }
+.cw-upgrade-card-title { font-family:var(--font-serif);font-size:20px;font-weight:500;color:var(--text);margin-bottom:4px; }
+.cw-upgrade-card-sub { font-size:13px;color:var(--text-3);line-height:1.45; }
+.cw-upgrade-card-actions { display:flex;align-items:center;gap:8px;flex-shrink:0; }
+.cw-upgrade-card-secondary {
+  background:transparent;border:none;color:var(--text-3);font-family:inherit;
+  font-size:13px;padding:8px 12px;cursor:pointer;border-radius:8px;
+}
+.cw-upgrade-card-secondary:hover { color:var(--text);background:rgba(255,255,255,0.04); }
+.cw-upgrade-card-primary {
+  background:var(--accent);color:#1f1e1c;font-weight:600;font-size:13px;
+  border:none;padding:9px 16px;border-radius:8px;cursor:pointer;font-family:inherit;
+  transition:background 120ms ease;
+}
+.cw-upgrade-card-primary:hover { background:var(--accent-2); }
+
+/* ---------- v2: chat extras (attachment, suggested-reply, rich content, handoff) ---------- */
+.chat-attachment {
+  display:inline-flex;align-items:center;gap:8px;
+  background:rgba(217,119,87,0.10);border:1px solid rgba(217,119,87,0.30);
+  padding:6px 10px;border-radius:8px;margin-bottom:10px;
+}
+.chat-attachment-icon { display:flex;align-items:center; }
+.chat-attachment-body { display:flex;flex-direction:column;gap:1px; }
+.chat-attachment-name { font-size:12.5px;font-weight:500;color:var(--text); }
+.chat-attachment-meta { font-size:11px;color:var(--text-3); }
+.chat-rich p { margin:0 0 12px; line-height:1.55; color:var(--text-2); }
+.chat-rich p:last-child { margin-bottom:0; }
+.chat-rich-h { font-weight:600;color:var(--text);margin-top:4px; }
+.chat-rich-list { margin:0 0 14px;padding-left:22px;color:var(--text-2);line-height:1.6; }
+.chat-rich-list li { margin-bottom:3px; }
+.chat-rich-pre {
+  font-family:var(--font-mono);font-size:12.5px;line-height:1.6;
+  background:var(--bg-elev-1);border:1px solid var(--border-strong);
+  padding:14px 16px;border-radius:10px;color:var(--text-2);
+  white-space:pre;overflow-x:auto;margin:0 0 14px;
+}
+.chat-suggested-replies {
+  display:flex;flex-wrap:wrap;gap:8px;margin-left:38px;margin-top:-8px;
+}
+.chat-suggested-reply {
+  background:rgba(217,119,87,0.08);
+  border:1px solid rgba(217,119,87,0.4);
+  color:var(--accent);font-family:inherit;font-size:13px;font-weight:500;
+  padding:7px 14px;border-radius:999px;cursor:pointer;
+  transition:background 120ms ease, border-color 120ms ease;
+}
+.chat-suggested-reply:hover {
+  background:rgba(217,119,87,0.16);
+  border-color:rgba(217,119,87,0.65);
+}
+.chat-handoff {
+  margin-top:18px;
+  background:linear-gradient(135deg, rgba(217,119,87,0.10), rgba(217,119,87,0.02));
+  border:1px solid rgba(217,119,87,0.4);
+  border-radius:12px;padding:16px 18px;
+}
+.chat-handoff-head { display:flex;gap:12px;margin-bottom:14px; }
+.chat-handoff-icon {
+  width:32px;height:32px;flex-shrink:0;
+  background:rgba(217,119,87,0.14);border-radius:8px;
+  display:flex;align-items:center;justify-content:center;
+}
+.chat-handoff-titles { flex:1; }
+.chat-handoff-title { font-size:14px;font-weight:600;color:var(--text);margin-bottom:4px; }
+.chat-handoff-sub { font-size:13px;color:var(--text-3);line-height:1.5; }
+.chat-handoff-foot { display:flex;align-items:center;gap:14px;flex-wrap:wrap; }
+.chat-handoff-cta {
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--accent);color:#1f1e1c;border:none;font-family:inherit;
+  font-size:13px;font-weight:600;padding:9px 16px;border-radius:8px;cursor:pointer;
+  transition:background 120ms ease;
+}
+.chat-handoff-cta:hover { background:var(--accent-2); }
+.chat-handoff-meta { font-size:12px;color:var(--text-3); }
+
+/* ---------- v2: cw-tab section visual cleanup ---------- */
+.cw-tab-section h2 {
+  font-size:11px;letter-spacing:0.08em;text-transform:uppercase;
+  color:var(--text-3);font-weight:600;
+}
+
 /* Active task card */
 .cw-task {
   background:var(--bg-elev-1);border:1px solid var(--border-strong);
@@ -2218,7 +2450,7 @@ const NavIcon = ({ name }) => {
   }
 };
 
-const TopBar = ({ title, onCowork }) => (
+const TopBar = ({ title, onReset }) => (
   <header className="cd-topbar">
     <div className="cd-tb-left">
       <button className="cd-iconbtn" title="Toggle sidebar">
@@ -2227,6 +2459,12 @@ const TopBar = ({ title, onCowork }) => (
       <div className="cd-breadcrumb">{title}</div>
     </div>
     <div className="cd-tb-right">
+      {onReset && (
+        <button className="cd-reset-btn" onClick={onReset} title="Reset demo to initial state">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 4v4h4"/><path d="M3.5 8a5 5 0 109.3-2.5"/></svg>
+          Reset demo
+        </button>
+      )}
       <button className="cd-iconbtn" title="Share">
         <svg width="14" height="14" viewBox="0 0 14 14" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round"><path d="M10 5l-6 3M10 9l-6-3"/><circle cx="11" cy="4" r="1.5"/><circle cx="11" cy="10" r="1.5"/><circle cx="3" cy="7" r="1.5"/></svg>
       </button>
@@ -2611,7 +2849,25 @@ Object.assign(window, { SetupModal, ChatSetup });
 // ===== cowork-tab.jsx =====
 // cowork-tab.jsx — Cowork landing screen showing 1 free task running
 
-const CoworkTab = ({ taskCreated, freeBadgeProminence }) => {
+const STARTER_CHIPS = [
+  "Organize last year's tax documents into a filing-ready folder",
+  "Run a competitive analysis on our top 3 competitors",
+  "Draft a research report from this folder of source PDFs",
+  "Sort and rename my Downloads folder",
+];
+
+const CoworkTab = ({
+  tasksUsed, completedTasks, runningTask, pendingPrompt,
+  onSubmit, onClearPending, onGoToChat, onUpgradeDismiss, showUpgrade,
+  freeBadgeProminence,
+}) => {
+  const locked = tasksUsed >= 2;
+  const remaining = Math.max(0, 2 - tasksUsed);
+  const sectionStatus =
+    locked ? '2 of 2 used · locked'
+    : tasksUsed === 1 ? '1 of 2 used · 1 task remaining'
+    : '0 of 2 used · 2 tasks remaining';
+
   return (
     <div className="cw-tab">
       <div className="cw-tab-head">
@@ -2627,33 +2883,35 @@ const CoworkTab = ({ taskCreated, freeBadgeProminence }) => {
           <p className="cw-tab-lead">
             Hand off recurring work to Claude — research, summaries, digests, drafts, or anything else you'd rather not do by hand. Run it once for free, then schedule it to run on its own.
           </p>
+
+          {tasksUsed === 0 && !runningTask && !pendingPrompt && (
+            <button className="cw-try-chat-btn" onClick={onGoToChat}>
+              <span className="cw-try-chat-pulse" />
+              Try the chat first to see how a Cowork starts →
+            </button>
+          )}
         </div>
 
-        <div className="cw-tab-quota">
+        <div className={`cw-tab-quota ${locked ? 'is-locked' : ''}`}>
           <div className="cw-tab-quota-num">
-            <span className="cw-tab-quota-used">{taskCreated ? 1 : 0}</span>
-            <span className="cw-tab-quota-total">/1</span>
+            <span className="cw-tab-quota-used">{tasksUsed}</span>
+            <span className="cw-tab-quota-total">/2</span>
           </div>
           <div className="cw-tab-quota-label">tasks used</div>
-          <div className="cw-tab-quota-bar"><div className="cw-tab-quota-fill" style={{ width: taskCreated ? '100%' : '0%' }} /></div>
+          <div className="cw-tab-quota-bar">
+            <div className="cw-tab-quota-fill" style={{ width: `${(tasksUsed / 2) * 100}%` }} />
+          </div>
           <a href="#" className="cw-tab-upgrade-link">Upgrade for unlimited →</a>
         </div>
       </div>
 
-      {taskCreated ? (
-        <div className="cw-tab-section">
-          <div className="cw-tab-section-head">
-            <h2>Your free Cowork</h2>
-            <span className="cw-tab-section-count">1 of 1 used · locked</span>
-          </div>
-          <UsedTaskCard />
+      <div className="cw-tab-section">
+        <div className="cw-tab-section-head">
+          <h2>YOUR FREE COWORK</h2>
+          <span className="cw-tab-section-count">{sectionStatus}</span>
         </div>
-      ) : (
-        <div className="cw-tab-section">
-          <div className="cw-tab-section-head">
-            <h2>USE A COWORK TASK</h2>
-            <span className="cw-tab-section-count">1 free task to spend</span>
-          </div>
+
+        {completedTasks.length === 0 && !runningTask ? (
           <div className="cw-empty">
             <div className="cw-empty-icon">
               <svg width="36" height="36" viewBox="0 0 16 16" fill="none" stroke="rgba(217,119,87,.7)" strokeWidth="1.2" strokeLinecap="round" strokeLinejoin="round">
@@ -2662,19 +2920,29 @@ const CoworkTab = ({ taskCreated, freeBadgeProminence }) => {
             </div>
             <div className="cw-empty-title">No Cowork tasks yet</div>
             <div className="cw-empty-sub">
-              Cowork tasks always start from a chat. Open <strong>Chat</strong> in the sidebar to see how it works — once you've run something useful, you can promote it into a recurring task here.
-            </div>
-            <div className="cw-empty-cta">
-              <button className="cw-empty-btn" onClick={() => setView('chat')}>
-                Go to Chat
-                <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M5 3l5 5-5 5"/></svg>
-              </button>
+              Hand off recurring work below — or start in <strong>Chat</strong> to see the full handoff flow.
             </div>
           </div>
-        </div>
-      )}
+        ) : (
+          <div className="cw-task-list">
+            {runningTask && <TaskCard task={runningTask} state="running" />}
+            {completedTasks.map((t, i) => (
+              <TaskCard key={t.id} task={t} state="completed" locked={locked} index={i} />
+            ))}
+          </div>
+        )}
+      </div>
 
-      {taskCreated && <UpgradeCallout />}
+      <CoworkComposer
+        locked={locked}
+        runningTask={runningTask}
+        pendingPrompt={pendingPrompt}
+        remaining={remaining}
+        showUpgrade={showUpgrade}
+        onSubmit={onSubmit}
+        onClearPending={onClearPending}
+        onUpgradeDismiss={onUpgradeDismiss}
+      />
     </div>
   );
 };
@@ -3123,7 +3391,262 @@ const PromptView = () => (
   </div>
 );
 
-Object.assign(window, { CoworkTab });
+const CONNECTOR_META = {
+  drive: { label: 'Drive', color: '#4285F4' },
+  web:   { label: 'Web',   color: '#9b958a' },
+  docs:  { label: 'Docs',  color: '#4285F4' },
+  files: { label: 'Files', color: '#d97757' },
+};
+
+const ConnectorTag = ({ kind }) => {
+  const m = CONNECTOR_META[kind] || { label: kind, color: '#9b958a' };
+  return <span className="cw-connector" style={{ color: m.color, borderColor: m.color + '33' }}>{m.label}</span>;
+};
+
+const TaskCard = ({ task, state, locked, index }) => {
+  const isRunning = state === 'running';
+  return (
+    <div className={`cw-task-row ${isRunning ? 'is-running' : 'is-completed'} ${locked ? 'is-locked' : ''}`}>
+      <div className="cw-task-row-head">
+        <div className="cw-task-row-l">
+          {isRunning ? (
+            <span className="cw-task-row-spin"><span/></span>
+          ) : (
+            <span className="cw-task-row-check">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="#7fc89a" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5" fill="rgba(127,200,154,0.12)"/><path d="M5 8.5l2 2 4-4.5"/></svg>
+            </span>
+          )}
+          <div className="cw-task-row-titles">
+            <div className="cw-task-row-title">{task.title}</div>
+            <div className="cw-task-row-status">
+              {isRunning ? (
+                <><span className="cw-task-row-dot is-running" /> {task.status}</>
+              ) : (
+                <><span className="cw-task-row-dot is-done" /> Completed · {task.completedAt || 'just now'}</>
+              )}
+            </div>
+          </div>
+        </div>
+        <div className="cw-task-row-r">
+          {!isRunning && task.connectors && task.connectors.map(c => <ConnectorTag key={c} kind={c} />)}
+          {locked && !isRunning && (
+            <span className="cw-task-row-lock" title="Locked — upgrade to Pro to edit">
+              <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="3.5" y="7" width="9" height="6.5" rx="1"/><path d="M5.5 7V5a2.5 2.5 0 015 0v2"/></svg>
+            </span>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpgrade, onSubmit, onClearPending, onUpgradeDismiss }) => {
+  const [text, setText] = React.useState('');
+  const fromChat = !!pendingPrompt;
+
+  React.useEffect(() => {
+    if (pendingPrompt) setText(pendingPrompt);
+  }, [pendingPrompt]);
+
+  const submit = () => {
+    if (!text.trim() || locked || runningTask) return;
+    onSubmit(text.trim());
+    setText('');
+    if (fromChat) onClearPending();
+  };
+
+  const onChipClick = (chip) => {
+    if (locked || runningTask) return;
+    setText(chip);
+    if (fromChat) onClearPending();
+  };
+
+  const showStarterChips = !locked && !text && !runningTask;
+
+  return (
+    <div className="cw-composer-wrap">
+      {showUpgrade && (
+        <div className="cw-upgrade-card">
+          <div className="cw-upgrade-card-body">
+            <div className="cw-upgrade-card-title">You've felt the magic. Keep going.</div>
+            <div className="cw-upgrade-card-sub">Upgrade to Pro for unlimited Cowork tasks, scheduled runs, and Dispatch.</div>
+          </div>
+          <div className="cw-upgrade-card-actions">
+            <button className="cw-upgrade-card-secondary" onClick={onUpgradeDismiss}>Maybe later</button>
+            <button className="cw-upgrade-card-primary">Upgrade to Pro →</button>
+          </div>
+        </div>
+      )}
+
+      {!locked && remaining === 1 && !runningTask && (
+        <div className="cw-composer-nudge">1 task remaining — make it count.</div>
+      )}
+
+      {showStarterChips && (
+        <div className="cw-starter-chips">
+          {STARTER_CHIPS.map((chip, i) => (
+            <button key={i} className="cw-starter-chip" onClick={() => onChipClick(chip)}>
+              <span className="cw-starter-chip-arrow">→</span>
+              <span>{chip}</span>
+            </button>
+          ))}
+        </div>
+      )}
+
+      {fromChat && text && (
+        <div className="cw-pending-note">
+          <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+          Continued from your chat conversation
+        </div>
+      )}
+
+      <div className={`cw-composer ${locked ? 'is-locked' : ''}`}>
+        <textarea
+          className="cw-composer-textarea"
+          value={text}
+          onChange={e => setText(e.target.value)}
+          onKeyDown={e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); submit(); } }}
+          placeholder={locked ? 'Upgrade to send more tasks' : 'Hand off something to Cowork…'}
+          rows={text.length > 80 ? 3 : 2}
+          disabled={locked}
+        />
+        <div className="cw-composer-row">
+          <div className="cw-composer-tools">
+            <button className="composer-tool" disabled={locked} aria-label="Add">
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round"><path d="M8 3v10M3 8h10"/></svg>
+            </button>
+            <button className="composer-tool" disabled={locked}>
+              <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1V12a1 1 0 01-1 1H3a1 1 0 01-1-1V5z"/></svg>
+              <span>Work in a project</span>
+            </button>
+            <button className="composer-tool" disabled={locked}>
+              <span>Ask</span>
+              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+            </button>
+          </div>
+          <div className="cw-composer-tools">
+            <button className="composer-tool" disabled={locked}>
+              <span>Sonnet 4.5</span>
+              <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
+            </button>
+            <button
+              className="cw-composer-send"
+              onClick={submit}
+              disabled={locked || !text.trim() || !!runningTask}
+              aria-label="Send"
+            >
+              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};
+
+const TaxFolderAttachment = () => (
+  <div className="chat-attachment">
+    <div className="chat-attachment-icon">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="#d97757" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><path d="M2 5a1 1 0 011-1h3l1.5 1.5H13a1 1 0 011 1V12a1 1 0 01-1 1H3a1 1 0 01-1-1V5z"/></svg>
+    </div>
+    <div className="chat-attachment-body">
+      <div className="chat-attachment-name">2025 Taxes/</div>
+      <div className="chat-attachment-meta">15 files · folder</div>
+    </div>
+  </div>
+);
+
+const ClaudeInventory = () => (
+  <div className="chat-rich">
+    <p>I took a look at the 15 documents you uploaded. Here's what I can see:</p>
+    <p className="chat-rich-h">What's here:</p>
+    <ul className="chat-rich-list">
+      <li>W-2 from Acme Corp (employment income)</li>
+      <li>2 × 1099-INT (Chase, Ally)</li>
+      <li>1099-DIV (Vanguard brokerage)</li>
+      <li>4 charitable donation letters</li>
+      <li>6 receipts that look like deductible business expenses</li>
+      <li>1 mortgage interest statement (1098)</li>
+    </ul>
+    <p className="chat-rich-h">Likely missing for a complete 2025 return:</p>
+    <ul className="chat-rich-list">
+      <li>1099-NEC if you did freelance/contract work</li>
+      <li>Form 5498 (IRA contributions)</li>
+      <li>State tax documents (only federal forms here)</li>
+      <li>Property tax statement if you own real estate</li>
+      <li>HSA / FSA documentation if applicable</li>
+    </ul>
+    <p>Want me to suggest a folder structure?</p>
+  </div>
+);
+
+const ClaudeFolderStructure = () => (
+  <div className="chat-rich">
+    <p>Here's a structure I'd recommend:</p>
+    <pre className="chat-rich-pre">{`2025 Taxes/
+  01_Income/
+    W-2_Acme.pdf
+    1099-INT_Chase.pdf
+    1099-INT_Ally.pdf
+    1099-DIV_Vanguard.pdf
+  02_Deductions/
+    Charitable/
+    Mortgage/
+    Business_Expenses/
+  03_Missing_Need_to_Find/
+    [empty — see flagged list above]`}</pre>
+    <p>I can walk you through how to set this up on your computer, or…</p>
+  </div>
+);
+
+const HandoffCard = ({ onOpen }) => (
+  <div className="chat-handoff">
+    <div className="chat-handoff-head">
+      <div className="chat-handoff-icon">
+        <svg width="18" height="18" viewBox="0 0 16 16" fill="none" stroke="#d97757" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M6 2l-3 3v6l3 3h4l3-3V5l-3-3H6z"/><circle cx="8" cy="8" r="2"/></svg>
+      </div>
+      <div className="chat-handoff-titles">
+        <div className="chat-handoff-title">Want me to actually do this for you?</div>
+        <div className="chat-handoff-sub">
+          Cowork can read each document on your computer, rename them with consistent naming, build the folder structure, and produce a summary flagging what's missing — all without you moving a single file.
+        </div>
+      </div>
+    </div>
+    <div className="chat-handoff-foot">
+      <button className="chat-handoff-cta" onClick={onOpen}>
+        Open in Cowork
+        <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
+      </button>
+      <span className="chat-handoff-meta">Free tier · 2 Cowork tasks included</span>
+    </div>
+  </div>
+);
+
+const ChatComposerLite = ({ onSuggest, suggestion }) => (
+  <div className="composer-wrap">
+    <div className="composer">
+      {suggestion && (
+        <div className="composer-suggestions">
+          <button className="composer-suggestion" onClick={onSuggest}>{suggestion}</button>
+        </div>
+      )}
+      <div className="composer-textarea" style={{color:'rgba(233,231,224,0.32)'}}>Reply to Claude…</div>
+      <div className="composer-row">
+        <div className="composer-tools">
+          <button className="composer-tool"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3"><path d="M8 3v10M3 8h10"/></svg></button>
+          <button className="composer-tool"><svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.3"><rect x="3" y="3" width="10" height="10" rx="2"/></svg> Tools</button>
+          <button className="composer-tool">Sonnet 4.5 ▾</button>
+        </div>
+        <button className="composer-send" disabled>
+          <svg width="12" height="12" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
+        </button>
+      </div>
+    </div>
+    <div className="composer-foot">Claude can make mistakes. Consider checking important information.</div>
+  </div>
+);
+
+Object.assign(window, { CoworkTab, TaxFolderAttachment, ClaudeInventory, ClaudeFolderStructure, HandoffCard, ChatComposerLite, ConnectorTag, TaskCard, CoworkComposer });
 
 
 
@@ -3136,31 +3659,100 @@ const TWEAK_DEFAULTS = /*EDITMODE-BEGIN*/{
   "freeBadgeProminence": "medium"
 }/*EDITMODE-END*/;
 
+const RUNNING_STATUSES = [
+  'Reading files...',
+  'Building folder structure...',
+  'Drafting summary...',
+];
+const TASK_DURATION_MS = 3000;
+const STATUS_INTERVAL_MS = 1000;
+
+const HANDOFF_PROMPT = "Organize my 2025 tax documents into the folder structure you just proposed. Rename files with consistent naming. Produce a summary flagging items missing from my return.";
+
+function inferConnectors(prompt) {
+  const p = prompt.toLowerCase();
+  if (p.includes('tax') || p.includes('downloads') || p.includes('folder') || p.includes('rename') || p.includes('pdf')) return ['drive', 'docs'];
+  if (p.includes('competitor') || p.includes('research') || p.includes('analysis')) return ['web', 'docs'];
+  return ['files', 'docs'];
+}
+
+function shortTitle(prompt) {
+  const trimmed = prompt.trim().replace(/\s+/g, ' ');
+  if (trimmed.length <= 64) return trimmed;
+  return trimmed.slice(0, 61) + '…';
+}
+
+const initialState = {
+  view: 'cowork',
+  chatStep: 0,
+  tasksUsed: 0,
+  completedTasks: [],
+  pendingPrompt: '',
+  runningTask: null,
+  showUpgrade: false,
+};
+
 function App() {
-  const [t, setTweak] = window.useTweaks(TWEAK_DEFAULTS);
-  const [view, setView]   = React.useState('cowork'); // 'chat' | 'cowork'
-  const [setupKind, setSetupKind] = React.useState(null); // null | 'modal' | 'panel' | 'chat' | 'picker'
-  const [taskCreated, setTaskCreated] = React.useState(false);
-  const [showToast, setShowToast]     = React.useState(false);
+  const [t] = window.useTweaks(TWEAK_DEFAULTS);
+  const [view, setView]                 = React.useState(initialState.view);
+  const [chatStep, setChatStep]         = React.useState(initialState.chatStep);
+  const [tasksUsed, setTasksUsed]       = React.useState(initialState.tasksUsed);
+  const [completedTasks, setCompleted]  = React.useState(initialState.completedTasks);
+  const [pendingPrompt, setPending]     = React.useState(initialState.pendingPrompt);
+  const [runningTask, setRunning]       = React.useState(initialState.runningTask);
+  const [showUpgrade, setShowUpgrade]   = React.useState(initialState.showUpgrade);
+  const statusTimers = React.useRef([]);
 
-  const openSetup = () => setSetupKind('picker');
-
-  // "Go to Cowork" CTA: skip setup, jump straight to Cowork tab,
-  // run the free test, and show the upgrade prompt with examples.
-  const onGoToCowork = () => {
-    setTaskCreated(true);
-    setView('cowork');
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3500);
+  const reset = () => {
+    statusTimers.current.forEach(id => clearTimeout(id));
+    statusTimers.current = [];
+    setView(initialState.view);
+    setChatStep(initialState.chatStep);
+    setTasksUsed(initialState.tasksUsed);
+    setCompleted(initialState.completedTasks);
+    setPending(initialState.pendingPrompt);
+    setRunning(initialState.runningTask);
+    setShowUpgrade(initialState.showUpgrade);
   };
 
-  const onCreate = () => {
-    setSetupKind(null);
-    setTaskCreated(true);
+  const advanceChat = () => setChatStep(s => Math.min(1, s + 1));
+
+  const onOpenInCowork = () => {
+    setPending(HANDOFF_PROMPT);
     setView('cowork');
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 3500);
   };
+
+  const onCoworkSubmit = (text) => {
+    if (tasksUsed >= 2 || runningTask) return;
+    const task = {
+      id: 'cwk_' + Math.random().toString(36).slice(2, 8),
+      title: shortTitle(text),
+      prompt: text,
+      status: RUNNING_STATUSES[0],
+      connectors: inferConnectors(text),
+    };
+    setRunning(task);
+
+    statusTimers.current.forEach(id => clearTimeout(id));
+    statusTimers.current = [];
+    statusTimers.current.push(setTimeout(() => {
+      setRunning(r => r ? { ...r, status: RUNNING_STATUSES[1] } : r);
+    }, STATUS_INTERVAL_MS));
+    statusTimers.current.push(setTimeout(() => {
+      setRunning(r => r ? { ...r, status: RUNNING_STATUSES[2] } : r);
+    }, STATUS_INTERVAL_MS * 2));
+    statusTimers.current.push(setTimeout(() => {
+      setRunning(null);
+      setCompleted(prev => [{ ...task, status: 'Completed', completedAt: 'just now' }, ...prev]);
+      setTasksUsed(n => {
+        const next = n + 1;
+        if (next >= 2) setShowUpgrade(true);
+        return next;
+      });
+    }, TASK_DURATION_MS));
+  };
+
+  React.useEffect(() => () => statusTimers.current.forEach(id => clearTimeout(id)), []);
 
   return (
     <div className="app">
@@ -3175,114 +3767,64 @@ function App() {
         freeBadgeProminence={t.freeBadgeProminence}
       />
       <main className="cd-main">
-        <TopBar title={view === 'chat' ? 'Weekly to-do sweep' : 'Cowork'} />
+        <TopBar
+          title={view === 'chat' ? 'Tax document organization' : 'Cowork'}
+          onReset={reset}
+        />
 
         <div className="cd-content">
           {view === 'chat' && (
             <div className="conversation">
               <UserMessage>
-                Can you look across my slack, linear, calendar, email and figure out my to-dos for the week?
+                <TaxFolderAttachment />
+                Can you organize all of these tax documents into a filing-ready folder structure and flag anything missing for my 2025 return?
               </UserMessage>
 
               <ClaudeMessage>
-                <TodoResponse />
-                {t.upsellStyle === 'chip'   && <UpsellChip   onClick={onGoToCowork} badgeProminence={t.freeBadgeProminence} />}
-                {t.upsellStyle === 'card'   && <UpsellCard   onClick={onGoToCowork} badgeProminence={t.freeBadgeProminence} />}
-                {t.upsellStyle === 'banner' && <UpsellBanner onClick={onGoToCowork} badgeProminence={t.freeBadgeProminence} />}
+                <ClaudeInventory />
               </ClaudeMessage>
+
+              {chatStep === 0 && (
+                <div className="chat-suggested-replies">
+                  <button className="chat-suggested-reply" onClick={advanceChat}>
+                    Yes please
+                  </button>
+                </div>
+              )}
+
+              {chatStep >= 1 && (
+                <>
+                  <UserMessage>Yes please</UserMessage>
+                  <ClaudeMessage>
+                    <ClaudeFolderStructure />
+                    <HandoffCard onOpen={onOpenInCowork} />
+                  </ClaudeMessage>
+                </>
+              )}
             </div>
           )}
 
           {view === 'cowork' && (
-            <CoworkTab taskCreated={taskCreated} freeBadgeProminence={t.freeBadgeProminence} />
+            <CoworkTab
+              tasksUsed={tasksUsed}
+              completedTasks={completedTasks}
+              runningTask={runningTask}
+              pendingPrompt={pendingPrompt}
+              showUpgrade={showUpgrade}
+              onSubmit={onCoworkSubmit}
+              onClearPending={() => setPending('')}
+              onGoToChat={() => setView('chat')}
+              onUpgradeDismiss={() => setShowUpgrade(false)}
+              freeBadgeProminence={t.freeBadgeProminence}
+            />
           )}
 
-          {view === 'chat' && <Composer />}
+          {view === 'chat' && <ChatComposerLite />}
         </div>
-
-        {showToast && (
-          <div className="confirm-toast">
-            <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="8" cy="8" r="6.5"/><path d="M5 8.5l2 2 4-4.5"/></svg>
-            Free test ran successfully · 1 of 1 used
-          </div>
-        )}
-
-        {setupKind === 'picker' && (
-          <SetupPicker onClose={() => setSetupKind(null)} onPick={(k) => setSetupKind(k)} />
-        )}
-        {setupKind === 'modal' && (
-          <SetupModal variant="modal" onClose={() => setSetupKind(null)} onConfirm={onCreate} />
-        )}
-        {setupKind === 'panel' && (
-          <SetupModal variant="panel" onClose={() => setSetupKind(null)} onConfirm={onCreate} />
-        )}
-        {setupKind === 'chat' && (
-          <>
-            <div className="setup-overlay" onClick={() => setSetupKind(null)} style={{background:'rgba(0,0,0,0.35)'}} />
-            <ChatSetup onClose={() => setSetupKind(null)} onConfirm={onCreate} />
-          </>
-        )}
       </main>
-
-      <TweaksPanel>
-        <TweakSection label="Cowork upsell" />
-        <TweakRadio
-          label="Suggestion style"
-          value={t.upsellStyle}
-          options={['chip', 'card', 'banner']}
-          onChange={(v) => setTweak('upsellStyle', v)}
-        />
-        <TweakRadio
-          label="Free-tier badge"
-          value={t.freeBadgeProminence}
-          options={['medium', 'loud']}
-          onChange={(v) => setTweak('freeBadgeProminence', v)}
-        />
-
-        <TweakSection label="Demo" />
-        <TweakButton onClick={() => setView(view === 'chat' ? 'cowork' : 'chat')}>
-          {view === 'chat' ? 'View Cowork tab →' : '← Back to chat'}
-        </TweakButton>
-        {taskCreated && (
-          <TweakButton onClick={() => { setTaskCreated(false); setView('chat'); }}>
-            Reset (delete task)
-          </TweakButton>
-        )}
-        <TweakButton onClick={() => setSetupKind('picker')}>
-          Open setup flow
-        </TweakButton>
-      </TweaksPanel>
     </div>
   );
 }
-
-const SetupPicker = ({ onClose, onPick }) => (
-  <div className="setup-picker" onClick={onClose}>
-    <div className="setup-picker-card" onClick={e => e.stopPropagation()}>
-      <div className="setup-picker-head">
-        <div className="setup-picker-title">How would you like to set this up?</div>
-        <div className="setup-picker-sub">Three flavors to choose from — pick what fits.</div>
-      </div>
-      <div className="setup-picker-options">
-        <button className="setup-picker-opt" onClick={() => onPick('modal')}>
-          <span className="setup-picker-opt-icon">🪟</span>
-          <span className="setup-picker-opt-title">Inline modal</span>
-          <span className="setup-picker-opt-sub">Quick form with all fields visible at once.</span>
-        </button>
-        <button className="setup-picker-opt" onClick={() => onPick('panel')}>
-          <span className="setup-picker-opt-icon">▶</span>
-          <span className="setup-picker-opt-title">Side panel</span>
-          <span className="setup-picker-opt-sub">Slides in from the right; chat stays visible.</span>
-        </button>
-        <button className="setup-picker-opt" onClick={() => onPick('chat')}>
-          <span className="setup-picker-opt-icon">💬</span>
-          <span className="setup-picker-opt-title">Conversational</span>
-          <span className="setup-picker-opt-sub">Claude walks you through it step-by-step.</span>
-        </button>
-      </div>
-    </div>
-  </div>
-);
 
 ReactDOM.createRoot(document.getElementById('root')).render(<App />);
 
