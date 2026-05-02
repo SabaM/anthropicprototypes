@@ -1361,23 +1361,6 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
   padding:24px 32px 64px;
   max-width:none;
 }
-.cw-tab-quota-floater {
-  display:flex;justify-content:flex-end;
-  margin-bottom:14px;
-}
-.cw-tab-quota-floater .cw-tab-quota {
-  background:rgba(217,119,87,0.06);
-  border:1px solid rgba(217,119,87,0.25);
-  border-radius:10px;padding:8px 14px;
-  min-width:0;
-  display:flex;flex-direction:row;align-items:center;gap:10px;
-}
-.cw-tab-quota-floater .cw-tab-quota-num { display:flex;align-items:baseline; }
-.cw-tab-quota-floater .cw-tab-quota-used { font-size:18px;font-weight:600; }
-.cw-tab-quota-floater .cw-tab-quota-total { font-size:13px; }
-.cw-tab-quota-floater .cw-tab-quota-label { font-size:10px;margin:0; }
-.cw-tab-quota-floater .cw-tab-quota-bar { display:none; }
-.cw-tab-quota-floater .cw-tab-upgrade-link { font-size:11px;margin-left:4px; }
 .cw-card-section-head { margin-top:0;margin-bottom:12px; }
 .cw-card {
   background:rgba(255,255,255,0.015);
@@ -3004,7 +2987,22 @@ const CoworkTab = ({
 
   return (
     <div className="cw-tab cw-tab-empty">
-      <div className="cw-tab-quota-floater">{quota}</div>
+      <div className="cw-tab-head">
+        <div className="cw-tab-titles">
+          <div className="cw-tab-eyebrow">
+            <span className="cw-tab-eyebrow-dot" />
+            Cowork
+            <span className={`cw-tab-eyebrow-pill ${freeBadgeProminence === 'loud' ? 'is-loud' : ''}`}>
+              {freeBadgeProminence === 'loud' ? '★ FREE TIER' : 'Free tier'}
+            </span>
+          </div>
+          <h1 className="cw-tab-h1">Try Cowork for free.</h1>
+          <p className="cw-tab-lead">
+            Hand off recurring work to Claude — research, summaries, digests, drafts, or anything else you'd rather not do by hand. Run it once for free, then schedule it to run on its own.
+          </p>
+        </div>
+        {quota}
+      </div>
 
       <div className="cw-tab-section-head cw-card-section-head">
         <h2>USE A COWORK TASK</h2>
