@@ -195,6 +195,13 @@
       try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
       catch { return {}; }
     }
+    (function migrate() {
+      const all = loadNames();
+      if (all[4] === "Claude Rooms") {
+        delete all[4];
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
+      }
+    })();
     function saveName(id, name) {
       const all = loadNames();
       if (name && name.trim()) all[id] = name.trim();
