@@ -6,24 +6,27 @@
   <title>Prototypes</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
-    html, body { height: 100%; }
+    html, body { height: 100%; width: 100%; }
     body {
       font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", system-ui, sans-serif;
       background: #1f1e1c;
       color: #f5f3ee;
       min-height: 100vh;
       overflow: hidden;
+      display: flex;
+      flex-direction: row;
     }
 
     /* ---------- Home ---------- */
     #home {
+      flex: 1 1 auto;
       height: 100vh;
-      width: 100vw;
       display: flex;
       flex-direction: column;
       align-items: center;
       padding: 80px 40px 40px;
       overflow: auto;
+      transition: flex-basis 200ms ease, padding 200ms ease;
     }
     #home header {
       text-align: center;
@@ -55,7 +58,7 @@
       display: flex;
       flex-direction: column;
       gap: 18px;
-      transition: border-color 120ms ease, transform 120ms ease;
+      transition: border-color 120ms ease, transform 120ms ease, padding 200ms ease;
       min-height: 200px;
     }
     .card:hover { border-color: #4a4641; }
@@ -77,7 +80,7 @@
       width: 100%;
       padding: 4px 0;
       border-bottom: 1px dashed transparent;
-      transition: border-color 120ms ease;
+      transition: border-color 120ms ease, font-size 200ms ease;
     }
     .card .name-input:hover { border-bottom-color: #4a4641; }
     .card .name-input:focus { border-bottom-color: #d97757; }
@@ -118,14 +121,50 @@
 
     /* ---------- Viewer ---------- */
     #viewer {
+      flex: 1 1 auto;
       display: none;
       flex-direction: column;
       height: 100vh;
-      width: 100vw;
       background: #1f1e1c;
+      min-width: 0;
+      order: 1;
     }
-    body.viewing #home { display: none; }
     body.viewing #viewer { display: flex; }
+    body.viewing #home {
+      flex: 0 0 300px;
+      padding: 22px 18px;
+      align-items: stretch;
+      border-left: 1px solid #2a2825;
+      background: #1a1916;
+      order: 2;
+    }
+    body.viewing #home header {
+      text-align: left;
+      margin-bottom: 18px;
+    }
+    body.viewing #home h1 { font-size: 18px; }
+    body.viewing #home p.sub { display: none; }
+    body.viewing .grid {
+      grid-template-columns: 1fr;
+      gap: 10px;
+      max-width: none;
+    }
+    body.viewing .card {
+      padding: 14px 16px;
+      min-height: 0;
+      gap: 8px;
+      border-radius: 12px;
+    }
+    body.viewing .card .num { font-size: 10px; }
+    body.viewing .card .name-input { font-size: 15px; padding: 2px 0; }
+    body.viewing .card .actions { gap: 6px; }
+    body.viewing .card .actions .btn { font-size: 11.5px; padding: 5px 10px; }
+    body.viewing .card .status { font-size: 10.5px; }
+    body.viewing .card.is-current {
+      border-color: #d97757;
+      background: #2a2724;
+    }
+    body.viewing .card.is-current .num { color: #d97757; }
     #toolbar {
       flex: 0 0 auto;
       display: flex;
@@ -212,21 +251,29 @@
       return loadNames()[p.id] || p.defaultName;
     }
 
+    let currentId = null;
+
     function renderGrid() {
       const grid = document.getElementById("grid");
       grid.innerHTML = "";
       const names = loadNames();
       PROTOTYPES.forEach(p => {
         const card = document.createElement("div");
-        card.className = "card" + (p.file ? "" : " empty");
+        const isCurrent = currentId === p.id;
+        card.className = "card" + (p.file ? "" : " empty") + (isCurrent ? " is-current" : "");
         const name = names[p.id] || p.defaultName;
+        let buttonHTML;
+        if (!p.file) {
+          buttonHTML = `<button class="btn primary" disabled>Open</button><span class="status">No file yet</span>`;
+        } else if (isCurrent) {
+          buttonHTML = `<button class="btn" disabled>● Viewing</button>`;
+        } else {
+          buttonHTML = `<button class="btn primary" data-action="open" data-id="${p.id}">${currentId ? 'Switch' : 'Open'}</button>`;
+        }
         card.innerHTML = `
           <div class="num">Prototype ${p.id}</div>
           <input class="name-input" type="text" value="${escapeHtml(name)}" placeholder="${escapeHtml(p.defaultName)}" data-id="${p.id}" />
-          <div class="actions">
-            <button class="btn primary" data-action="open" data-id="${p.id}" ${p.file ? "" : "disabled"}>Open</button>
-            ${p.file ? "" : '<span class="status">No file yet</span>'}
-          </div>
+          <div class="actions">${buttonHTML}</div>
         `;
         grid.appendChild(card);
       });
@@ -254,14 +301,17 @@
       const input = document.querySelector(`.name-input[data-id="${id}"]`);
       if (input) saveName(id, input.value);
 
+      currentId = id;
       document.getElementById("vw-num").textContent = `Prototype ${p.id}`;
       document.getElementById("vw-name").textContent = nameFor(p);
       document.getElementById("frame").src = p.file;
       document.body.classList.add("viewing");
       location.hash = `#p=${id}`;
+      renderGrid();
     }
 
     function goHome() {
+      currentId = null;
       document.body.classList.remove("viewing");
       document.getElementById("frame").src = "about:blank";
       if (location.hash) history.replaceState(null, "", location.pathname);
