@@ -3910,23 +3910,11 @@ function App() {
                 <ClaudeInventory />
               </ClaudeMessage>
 
-              {chatStep === 0 && (
-                <div className="chat-suggested-replies">
-                  <button className="chat-suggested-reply" onClick={advanceChat}>
-                    Yes please
-                  </button>
-                </div>
-              )}
-
-              {chatStep >= 1 && (
-                <>
-                  <UserMessage>Yes please</UserMessage>
-                  <ClaudeMessage>
-                    <ClaudeFolderStructure />
-                    <HandoffCard onOpen={onOpenInCowork} tasksUsed={tasksUsed} />
-                  </ClaudeMessage>
-                </>
-              )}
+              <UserMessage>Yes please</UserMessage>
+              <ClaudeMessage>
+                <ClaudeFolderStructure />
+                <HandoffCard onOpen={onOpenInCowork} tasksUsed={tasksUsed} />
+              </ClaudeMessage>
             </div>
           )}
 
