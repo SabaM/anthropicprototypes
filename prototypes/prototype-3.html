@@ -1355,37 +1355,59 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
   color:var(--text-3);font-weight:600;
 }
 
-/* ---------- v3: chat-hero empty state ---------- */
+/* ---------- v4: cowork landing card ---------- */
 .cw-tab-empty {
   position:relative;
-  min-height:calc(100vh - 100px);
-  display:flex;flex-direction:column;justify-content:center;align-items:center;
-  padding:32px 32px 64px;
+  padding:24px 32px 64px;
+  max-width:none;
 }
 .cw-tab-quota-floater {
-  position:absolute;top:0;right:0;
+  display:flex;justify-content:flex-end;
+  margin-bottom:14px;
 }
 .cw-tab-quota-floater .cw-tab-quota {
   background:rgba(217,119,87,0.06);
   border:1px solid rgba(217,119,87,0.25);
-  border-radius:12px;padding:14px 18px;
-  min-width:170px;
+  border-radius:10px;padding:8px 14px;
+  min-width:0;
+  display:flex;flex-direction:row;align-items:center;gap:10px;
 }
-.cw-hero {
-  display:flex;flex-direction:column;align-items:center;
-  width:100%;max-width:680px;text-align:center;
+.cw-tab-quota-floater .cw-tab-quota-num { display:flex;align-items:baseline; }
+.cw-tab-quota-floater .cw-tab-quota-used { font-size:18px;font-weight:600; }
+.cw-tab-quota-floater .cw-tab-quota-total { font-size:13px; }
+.cw-tab-quota-floater .cw-tab-quota-label { font-size:10px;margin:0; }
+.cw-tab-quota-floater .cw-tab-quota-bar { display:none; }
+.cw-tab-quota-floater .cw-tab-upgrade-link { font-size:11px;margin-left:4px; }
+.cw-card-section-head { margin-top:0;margin-bottom:12px; }
+.cw-card {
+  background:rgba(255,255,255,0.015);
+  border:1px solid var(--border-strong);
+  border-radius:16px;
+  padding:24px 28px 20px;
+  background-image:radial-gradient(circle at 1px 1px, rgba(255,255,255,0.03) 1px, transparent 0);
+  background-size:18px 18px;
 }
-.cw-hero-icon { margin-bottom:18px; }
+.cw-hero-headline {
+  display:flex;align-items:center;gap:14px;margin-bottom:6px;
+}
+.cw-hero-mark {
+  width:32px;height:32px;border-radius:8px;flex-shrink:0;
+  background:rgba(217,119,87,0.16);
+  border:1px solid rgba(217,119,87,0.3);
+  color:var(--accent);font-weight:700;font-size:14px;
+  display:inline-flex;align-items:center;justify-content:center;
+  font-family:var(--font-serif);
+}
 .cw-hero-h1 {
   font-family:var(--font-serif);
-  font-size:38px;font-weight:400;letter-spacing:-0.02em;
-  color:var(--text);margin-bottom:8px;line-height:1.2;
+  font-size:30px;font-weight:500;letter-spacing:-0.01em;
+  color:var(--text);line-height:1.15;
 }
 .cw-hero-link {
   font-size:13px;color:var(--text-3);text-decoration:underline;
-  text-decoration-color:rgba(233,231,224,0.25);
+  text-decoration-color:rgba(233,231,224,0.30);
   text-underline-offset:3px;
-  margin-bottom:28px;display:inline-block;
+  margin-left:46px;margin-bottom:18px;display:inline-block;
 }
 .cw-hero-link:hover { color:var(--text-2);text-decoration-color:var(--text-3); }
 .cw-hero-composer { width:100%; }
@@ -1393,28 +1415,50 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
   position:static;background:none;padding:0;margin-top:0;
 }
 .cw-composer.is-hero {
-  border-radius:18px;padding:18px 20px;
-  background:var(--bg-elev-1);
+  border-radius:14px;padding:14px 16px;
+  background:var(--bg-input);
   border-color:var(--border-strong);
 }
 .cw-composer.is-hero .cw-composer-textarea {
-  font-size:15px;padding:6px 0 8px;
+  font-size:14.5px;padding:6px 0 14px;min-height:52px;
 }
 .cw-composer.is-hero .cw-composer-textarea::placeholder { color:var(--text-3); }
-.cw-hero-affordance {
+.cw-composer.is-hero .cw-composer-row { gap:4px;flex-wrap:nowrap; }
+.cw-composer.is-hero .cw-composer-tools { gap:0;flex-shrink:1;min-width:0;flex-wrap:nowrap; }
+.cw-composer.is-hero .cw-composer-tools .composer-tool {
+  padding:4px 8px;font-size:12px;white-space:nowrap;
+}
+.cw-composer.is-hero .cw-composer-tools .composer-tool span { white-space:nowrap; }
+
+/* chips inside the card, below composer */
+.cw-card-chips {
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:16px;
+}
+.cw-card-chip {
   display:inline-flex;align-items:center;gap:8px;
-  margin-top:18px;
-  font-size:12px;color:var(--text-3);
-  padding:6px 12px;border-radius:999px;
-  background:rgba(255,255,255,0.02);border:1px solid var(--border);
+  background:rgba(255,255,255,0.02);
+  border:1px solid var(--border);
+  color:var(--text-2);font-size:12.5px;font-family:inherit;
+  padding:7px 13px;border-radius:999px;cursor:pointer;
+  transition:background 120ms ease, color 120ms ease, border-color 120ms ease;
 }
-.cw-hero-affordance-dots { display:inline-flex;gap:4px; }
-.cw-hero-affordance-dot {
-  width:6px;height:6px;border-radius:50%;
-  background:rgba(217,119,87,0.25);
-  display:inline-block;
+.cw-card-chip:hover {
+  background:rgba(255,255,255,0.05);
+  color:var(--text);
+  border-color:var(--text-4);
 }
-.cw-hero-affordance-dot.is-on { background:var(--accent); }
+.cw-card-chip-arrow { color:var(--accent);font-weight:600; }
+
+/* completed tasks below the chat fold */
+.cw-history-fold {
+  margin-top:64px;
+  padding-top:24px;
+  border-top:1px solid var(--border);
+}
+.cw-history-fold .cw-tab-section-head {
+  margin-bottom:14px;
+}
 
 /* Active task card */
 .cw-task {
@@ -2921,10 +2965,10 @@ Object.assign(window, { SetupModal, ChatSetup });
 // cowork-tab.jsx — Cowork landing screen showing 1 free task running
 
 const STARTER_CHIPS = [
-  "Organize last year's tax documents into a filing-ready folder",
-  "Run a competitive analysis on our top 3 competitors",
-  "Draft a research report from this folder of source PDFs",
-  "Sort and rename my Downloads folder",
+  "Summarize my unread emails every morning",
+  "Track competitors' changelogs each week",
+  "Draft my Friday status update from Linear",
+  "Brief me on tomorrow's meetings every evening",
 ];
 
 const CoworkTab = ({
@@ -2950,92 +2994,70 @@ const CoworkTab = ({
     </div>
   );
 
-  if (isEmpty) {
-    return (
-      <div className="cw-tab cw-tab-empty">
-        <div className="cw-tab-quota-floater">{quota}</div>
-        <div className="cw-hero">
-          <div className="cw-hero-icon">
-            <svg width="40" height="40" viewBox="0 0 24 24" fill="#D97757">
-              <path d="M12 2L13.5 8.5L20 6L15.5 11L22 12L15.5 13L20 18L13.5 15.5L12 22L10.5 15.5L4 18L8.5 13L2 12L8.5 11L4 6L10.5 8.5L12 2Z"/>
-            </svg>
-          </div>
-          <h1 className="cw-hero-h1">Let's knock something off your list</h1>
-          <a href="#" className="cw-hero-link">Learn how to use Cowork safely.</a>
-
-          <div className="cw-hero-composer">
-            <CoworkComposer
-              locked={locked}
-              runningTask={runningTask}
-              pendingPrompt={pendingPrompt}
-              remaining={remaining}
-              showUpgrade={showUpgrade}
-              onSubmit={onSubmit}
-              onClearPending={onClearPending}
-              onUpgradeDismiss={onUpgradeDismiss}
-              variant="hero"
-            />
-          </div>
-
-          <div className="cw-hero-affordance">
-            <span className="cw-hero-affordance-dots">
-              <span className="cw-hero-affordance-dot is-on" />
-              <span className="cw-hero-affordance-dot is-on" />
-            </span>
-            2 free Cowork tasks to spend
-          </div>
-        </div>
-      </div>
-    );
-  }
-
   const sectionStatus =
     locked ? '2 of 2 used · locked'
-    : '1 of 2 used · 1 task remaining';
+    : tasksUsed === 1 ? '1 of 2 used · 1 task remaining'
+    : '0 of 2 used · 2 tasks remaining';
+  const cardSectionLabel = locked
+    ? '0 free tasks left'
+    : `${remaining} free task${remaining !== 1 ? 's' : ''} to spend`;
 
   return (
-    <div className="cw-tab">
-      <div className="cw-tab-head">
-        <div className="cw-tab-titles">
-          <div className="cw-tab-eyebrow">
-            <span className="cw-tab-eyebrow-dot" />
-            Cowork
-            <span className={`cw-tab-eyebrow-pill ${freeBadgeProminence === 'loud' ? 'is-loud' : ''}`}>
-              {freeBadgeProminence === 'loud' ? '★ FREE TIER' : 'Free tier'}
-            </span>
+    <div className="cw-tab cw-tab-empty">
+      <div className="cw-tab-quota-floater">{quota}</div>
+
+      <div className="cw-tab-section-head cw-card-section-head">
+        <h2>USE A COWORK TASK</h2>
+        <span className="cw-tab-section-count">{cardSectionLabel}</span>
+      </div>
+
+      <div className="cw-card">
+        <div className="cw-hero-headline">
+          <span className="cw-hero-mark" aria-hidden="true">A</span>
+          <h1 className="cw-hero-h1">Let's knock something off your list</h1>
+        </div>
+        <a href="#" className="cw-hero-link">Learn how to use Cowork safely.</a>
+
+        <div className="cw-hero-composer">
+          <CoworkComposer
+            locked={locked}
+            runningTask={runningTask}
+            pendingPrompt={pendingPrompt}
+            remaining={remaining}
+            showUpgrade={showUpgrade}
+            onSubmit={onSubmit}
+            onClearPending={onClearPending}
+            onUpgradeDismiss={onUpgradeDismiss}
+            variant="hero"
+          />
+        </div>
+
+        {!locked && !runningTask && (
+          <div className="cw-card-chips">
+            {STARTER_CHIPS.map((chip, i) => (
+              <button key={i} className="cw-card-chip" onClick={() => onSubmit(chip)}>
+                <span className="cw-card-chip-arrow">→</span>
+                <span>{chip}</span>
+              </button>
+            ))}
           </div>
-          <h1 className="cw-tab-h1">Try Cowork for free.</h1>
-          <p className="cw-tab-lead">
-            Hand off recurring work to Claude — research, summaries, digests, drafts, or anything else you'd rather not do by hand. Run it once for free, then schedule it to run on its own.
-          </p>
-        </div>
-        {quota}
+        )}
       </div>
 
-      <div className="cw-tab-section">
-        <div className="cw-tab-section-head">
-          <h2>YOUR FREE COWORK</h2>
-          <span className="cw-tab-section-count">{sectionStatus}</span>
+      {(runningTask || completedTasks.length > 0) && (
+        <div className="cw-history-fold">
+          <div className="cw-tab-section-head">
+            <h2>YOUR FREE COWORK</h2>
+            <span className="cw-tab-section-count">{sectionStatus}</span>
+          </div>
+          <div className="cw-task-list">
+            {runningTask && <TaskCard task={runningTask} state="running" />}
+            {completedTasks.map((t, i) => (
+              <TaskCard key={t.id} task={t} state="completed" locked={locked} index={i} />
+            ))}
+          </div>
         </div>
-
-        <div className="cw-task-list">
-          {runningTask && <TaskCard task={runningTask} state="running" />}
-          {completedTasks.map((t, i) => (
-            <TaskCard key={t.id} task={t} state="completed" locked={locked} index={i} />
-          ))}
-        </div>
-      </div>
-
-      <CoworkComposer
-        locked={locked}
-        runningTask={runningTask}
-        pendingPrompt={pendingPrompt}
-        remaining={remaining}
-        showUpgrade={showUpgrade}
-        onSubmit={onSubmit}
-        onClearPending={onClearPending}
-        onUpgradeDismiss={onUpgradeDismiss}
-      />
+      )}
     </div>
   );
 };
@@ -3572,21 +3594,6 @@ const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpg
         </div>
       )}
 
-      {!locked && remaining === 1 && !runningTask && (
-        <div className="cw-composer-nudge">1 task remaining — make it count.</div>
-      )}
-
-      {showStarterChips && (
-        <div className="cw-starter-chips">
-          {STARTER_CHIPS.map((chip, i) => (
-            <button key={i} className="cw-starter-chip" onClick={() => onChipClick(chip)}>
-              <span className="cw-starter-chip-arrow">→</span>
-              <span>{chip}</span>
-            </button>
-          ))}
-        </div>
-      )}
-
       {fromChat && text && (
         <div className="cw-pending-note">
           <svg width="11" height="11" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" strokeLinejoin="round"><path d="M3 8h10M9 4l4 4-4 4"/></svg>
@@ -3620,17 +3627,23 @@ const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpg
           </div>
           <div className="cw-composer-tools">
             <button className="composer-tool" disabled={locked}>
-              <span>Sonnet 4.5</span>
+              <span>Legacy Model</span>
               <svg width="9" height="9" viewBox="0 0 12 12" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"><path d="M3 5l3 3 3-3"/></svg>
             </button>
-            <button
-              className="cw-composer-send"
-              onClick={submit}
-              disabled={locked || !text.trim() || !!runningTask}
-              aria-label="Send"
-            >
-              <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
-            </button>
+            {text.trim() ? (
+              <button
+                className="cw-composer-send"
+                onClick={submit}
+                disabled={locked || !text.trim() || !!runningTask}
+                aria-label="Send"
+              >
+                <svg width="13" height="13" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round"><path d="M8 13V3M4 7l4-4 4 4"/></svg>
+              </button>
+            ) : (
+              <button className="composer-tool" disabled={locked} aria-label="Voice">
+                <svg width="14" height="14" viewBox="0 0 16 16" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="2" width="4" height="8" rx="2"/><path d="M3.5 8a4.5 4.5 0 009 0M8 12.5V14"/></svg>
+              </button>
+            )}
           </div>
         </div>
       </div>
