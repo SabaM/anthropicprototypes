@@ -213,6 +213,8 @@
               overflow-y: auto !important;
             }
             main { max-height: 100vh; overflow-y: auto; }
+            /* Tighten the inner content wrapper which had 10vh top padding */
+            main div[style*="padding: 10vh"] { padding-top: 24px !important; }
           `;
           (doc.head || doc.documentElement).appendChild(style);
           cssInjected = true;
