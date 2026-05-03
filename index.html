@@ -214,10 +214,10 @@
 
   <script>
     const PROTOTYPES = [
-      { id: 1, defaultName: "(Tasteful) Upgrade Awareness", file: "prototypes/prototype-1.html" },
-      { id: 2, defaultName: "Value-First Sign Up", file: "prototypes/prototype-2.html" },
-      { id: 3, defaultName: "Cowork on Free Tier", file: "prototypes/prototype-3.html" },
-      { id: 4, defaultName: "Claude Sessions", file: "prototypes/prototype-4.html" },
+      { id: 1, defaultName: "(Tasteful) Upgrade Awareness", size: "Small",  file: "prototypes/prototype-1.html" },
+      { id: 2, defaultName: "Value-First Sign Up",          size: "Small",  file: "prototypes/prototype-2.html" },
+      { id: 3, defaultName: "Cowork on Free Tier",          size: "Medium", file: "prototypes/prototype-3.html" },
+      { id: 4, defaultName: "Claude Sessions",              size: "Big",    file: "prototypes/prototype-4.html" },
     ];
     // One-time cleanup of legacy localStorage entries from when names were editable.
     try { localStorage.removeItem("prototype-names-v1"); } catch {}
@@ -240,7 +240,7 @@
           buttonHTML = `<button class="btn primary" data-action="open" data-id="${p.id}">${currentId ? 'Switch' : 'Open'}</button>`;
         }
         card.innerHTML = `
-          <div class="num">Bet ${p.id}</div>
+          <div class="num">Bet ${p.id}${p.size ? ` — ${p.size}` : ""}</div>
           <div class="bet-name" data-id="${p.id}"></div>
           <div class="actions">${buttonHTML}</div>
         `;
@@ -265,7 +265,7 @@
       const p = PROTOTYPES.find(x => x.id === id);
       if (!p || !p.file) return;
       currentId = id;
-      document.getElementById("vw-num").textContent = `Bet ${p.id}`;
+      document.getElementById("vw-num").textContent = `Bet ${p.id}${p.size ? ` — ${p.size}` : ""}`;
       document.getElementById("vw-name").textContent = p.defaultName;
       const frame = document.getElementById("frame");
       frame.src = p.file;
