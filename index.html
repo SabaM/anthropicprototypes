@@ -69,22 +69,14 @@
       text-transform: uppercase;
       color: #9b958a;
     }
-    .card .name-input {
-      background: transparent;
-      border: none;
-      outline: none;
+    .card .bet-name {
       color: #f5f3ee;
       font-family: "Fraunces", Georgia, serif;
       font-size: 24px;
       font-weight: 400;
-      width: 100%;
       padding: 4px 0;
-      border-bottom: 1px dashed transparent;
-      transition: border-color 120ms ease, font-size 200ms ease;
+      transition: font-size 200ms ease;
     }
-    .card .name-input:hover { border-bottom-color: #4a4641; }
-    .card .name-input:focus { border-bottom-color: #d97757; }
-    .card .name-input::placeholder { color: #6b6660; font-style: italic; }
     .card .actions {
       display: flex;
       gap: 8px;
@@ -156,7 +148,7 @@
       border-radius: 12px;
     }
     body.viewing .card .num { font-size: 10px; }
-    body.viewing .card .name-input { font-size: 15px; padding: 2px 0; }
+    body.viewing .card .bet-name { font-size: 15px; padding: 2px 0; }
     body.viewing .card .actions { gap: 6px; }
     body.viewing .card .actions .btn { font-size: 11.5px; padding: 5px 10px; }
     body.viewing .card .status { font-size: 10.5px; }
@@ -228,41 +220,18 @@
       { id: 3, defaultName: "Cowork on Free Tier", file: "prototypes/prototype-3.html" },
       { id: 4, defaultName: "Claude Sessions", file: "prototypes/prototype-4.html" },
     ];
-    const STORAGE_KEY = "prototype-names-v1";
-
-    function loadNames() {
-      try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || {}; }
-      catch { return {}; }
-    }
-    (function migrate() {
-      const all = loadNames();
-      let dirty = false;
-      if (all[4] === "Claude Rooms") { delete all[4]; dirty = true; }
-      if (all[1] === "Trio Upgrade" || all[1] === "(Tasteful) Trio upgrade") { delete all[1]; dirty = true; }
-      if (all[2] === "Logged-out Experience" || all[2] === "Value-first sign up" || all[2] === "Value First Sign Up") { delete all[2]; dirty = true; }
-      if (dirty) localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-    })();
-    function saveName(id, name) {
-      const all = loadNames();
-      if (name && name.trim()) all[id] = name.trim();
-      else delete all[id];
-      localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-    }
-    function nameFor(p) {
-      return loadNames()[p.id] || p.defaultName;
-    }
+    // One-time cleanup of legacy localStorage entries from when names were editable.
+    try { localStorage.removeItem("prototype-names-v1"); } catch {}
 
     let currentId = null;
 
     function renderGrid() {
       const grid = document.getElementById("grid");
       grid.innerHTML = "";
-      const names = loadNames();
       PROTOTYPES.forEach(p => {
         const card = document.createElement("div");
         const isCurrent = currentId === p.id;
         card.className = "card" + (p.file ? "" : " empty") + (isCurrent ? " is-current" : "");
-        const name = names[p.id] || p.defaultName;
         let buttonHTML;
         if (!p.file) {
           buttonHTML = `<button class="btn primary" disabled>Open</button><span class="status">No file yet</span>`;
@@ -273,17 +242,13 @@
         }
         card.innerHTML = `
           <div class="num">Bet ${p.id}</div>
-          <input class="name-input" type="text" value="${escapeHtml(name)}" placeholder="${escapeHtml(p.defaultName)}" data-id="${p.id}" />
+          <div class="bet-name" data-id="${p.id}"></div>
           <div class="actions">${buttonHTML}</div>
         `;
+        card.querySelector('.bet-name').textContent = p.defaultName;
         grid.appendChild(card);
       });
 
-      grid.querySelectorAll(".name-input").forEach(el => {
-        el.addEventListener("change", e => saveName(+e.target.dataset.id, e.target.value));
-        el.addEventListener("blur",   e => saveName(+e.target.dataset.id, e.target.value));
-        el.addEventListener("keydown", e => { if (e.key === "Enter") e.target.blur(); });
-      });
       grid.querySelectorAll('[data-action="open"]').forEach(el => {
         el.addEventListener("click", () => openPrototype(+el.dataset.id));
       });
@@ -298,13 +263,9 @@
     function openPrototype(id) {
       const p = PROTOTYPES.find(x => x.id === id);
       if (!p || !p.file) return;
-      // Save current name first (in case of unblurred edit)
-      const input = document.querySelector(`.name-input[data-id="${id}"]`);
-      if (input) saveName(id, input.value);
-
       currentId = id;
       document.getElementById("vw-num").textContent = `Bet ${p.id}`;
-      document.getElementById("vw-name").textContent = nameFor(p);
+      document.getElementById("vw-name").textContent = p.defaultName;
       document.getElementById("frame").src = p.file;
       document.body.classList.add("viewing");
       location.hash = `#p=${id}`;
