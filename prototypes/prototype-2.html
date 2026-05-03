@@ -64,9 +64,31 @@
       border: 0;
       background: #1f1e1c;
     }
+
+    /* Pulsating dot — sits to the LEFT of the variant toggle */
+    #tour-dot {
+      position: fixed;
+      top: 24px;
+      right: 156px;
+      z-index: 99999;
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: #52a373;
+      box-shadow: 0 0 0 0 rgba(82,163,115,0.75);
+      animation: tourPulse 1.2s ease-out infinite;
+      pointer-events: none;
+    }
+    @keyframes tourPulse {
+      0%   { box-shadow: 0 0 0 0 rgba(82,163,115,0.75); }
+      70%  { box-shadow: 0 0 0 10px rgba(82,163,115,0); }
+      100% { box-shadow: 0 0 0 0 rgba(82,163,115,0); }
+    }
   </style>
 </head>
 <body>
+  <span id="tour-dot" aria-hidden="true"></span>
+
   <div id="toggle" role="tablist" aria-label="Variant">
     <span class="label">Variant</span>
     <button data-variant="a" type="button">A</button>

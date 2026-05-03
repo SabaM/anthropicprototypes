@@ -260,16 +260,70 @@
       }[c]));
     }
 
+    let injectorAbort = null;
+
     function openPrototype(id) {
       const p = PROTOTYPES.find(x => x.id === id);
       if (!p || !p.file) return;
       currentId = id;
       document.getElementById("vw-num").textContent = `Bet ${p.id}`;
       document.getElementById("vw-name").textContent = p.defaultName;
-      document.getElementById("frame").src = p.file;
+      const frame = document.getElementById("frame");
+      frame.src = p.file;
       document.body.classList.add("viewing");
       location.hash = `#p=${id}`;
       renderGrid();
+
+      // Per-prototype iframe customizations
+      if (injectorAbort) injectorAbort();
+      injectorAbort = null;
+      if (id === 1) injectorAbort = injectTourButton(frame);
+    }
+
+    function injectTourButton(frame) {
+      const start = Date.now();
+      let cancelled = false;
+      const tick = setInterval(() => {
+        if (cancelled || Date.now() - start > 30000) { clearInterval(tick); return; }
+        let doc;
+        try { doc = frame.contentDocument; } catch { return; }
+        if (!doc || !doc.body) return;
+        if (doc.querySelector('.__injected-tour-btn')) return; // already injected
+        // Find element whose direct text is exactly "Upgrade →"
+        const w = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT);
+        let n, target;
+        while (n = w.nextNode()) {
+          if ((n.nodeValue || '').trim() === 'Upgrade →') { target = n.parentElement; break; }
+        }
+        if (!target) return;
+        // Inject CSS once
+        if (!doc.getElementById('__injected-tour-style')) {
+          const style = doc.createElement('style');
+          style.id = '__injected-tour-style';
+          style.textContent = `
+            .__injected-tour-dot {
+              display:inline-block;vertical-align:middle;
+              width:9px;height:9px;border-radius:50%;
+              background:#52a373;flex-shrink:0;margin-right:8px;
+              box-shadow:0 0 0 0 rgba(82,163,115,0.75);
+              animation:__injectedTourPulse 1.2s ease-out infinite;
+              pointer-events:none;
+            }
+            @keyframes __injectedTourPulse {
+              0%   { box-shadow:0 0 0 0 rgba(82,163,115,0.75); }
+              70%  { box-shadow:0 0 0 10px rgba(82,163,115,0); }
+              100% { box-shadow:0 0 0 0 rgba(82,163,115,0); }
+            }
+          `;
+          (doc.head || doc.documentElement).appendChild(style);
+        }
+        // Insert a pulsating dot to the LEFT of the Upgrade button
+        const dot = doc.createElement('span');
+        dot.className = '__injected-tour-dot __injected-tour-btn';
+        dot.setAttribute('aria-hidden', 'true');
+        target.parentElement.insertBefore(dot, target);
+      }, 250);
+      return () => { cancelled = true; clearInterval(tick); };
     }
 
     function goHome() {
