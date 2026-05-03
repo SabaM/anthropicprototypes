@@ -206,7 +206,6 @@
       <button class="btn" id="btn-home" title="Back to home (Esc)">← Home</button>
       <button class="btn" id="btn-refresh" title="Refresh prototype (R)">↻ Refresh</button>
       <div class="label"><span class="badge" id="vw-num"></span> <strong id="vw-name"></strong></div>
-      <button class="btn" id="btn-newtab" title="Open in new tab">↗ Open in new tab</button>
     </div>
     <div id="frame-wrap">
       <iframe id="frame" title="Prototype"></iframe>
@@ -345,12 +344,7 @@
 
     document.getElementById("btn-home").addEventListener("click", goHome);
     document.getElementById("btn-refresh").addEventListener("click", refreshPrototype);
-    document.getElementById("btn-newtab").addEventListener("click", () => {
-      const src = document.getElementById("frame").getAttribute("src");
-      if (src && src !== "about:blank") window.open(src, "_blank");
-    });
-
-    document.addEventListener("keydown", e => {
+document.addEventListener("keydown", e => {
       if (!document.body.classList.contains("viewing")) return;
       if (e.key === "Escape") goHome();
       else if ((e.key === "r" || e.key === "R") && !e.metaKey && !e.ctrlKey && !e.altKey) {
