@@ -1402,6 +1402,23 @@ html,body{margin:0;padding:0;height:100%;background:#0a0908;color:var(--text);fo
   background:var(--bg-input);
   border-color:var(--border-strong);
 }
+.cw-composer.is-flash {
+  animation: cwComposerFlash 2.2s ease-out 1;
+}
+@keyframes cwComposerFlash {
+  0% {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 4px rgba(217,119,87,0.18), 0 0 24px rgba(217,119,87,0.35);
+  }
+  35% {
+    border-color: var(--accent);
+    box-shadow: 0 0 0 6px rgba(217,119,87,0.10), 0 0 32px rgba(217,119,87,0.20);
+  }
+  100% {
+    border-color: var(--border-strong);
+    box-shadow: 0 0 0 0 rgba(217,119,87,0), 0 0 0 rgba(217,119,87,0);
+  }
+}
 .cw-composer.is-hero .cw-composer-textarea {
   font-size:14.5px;padding:6px 0 14px;min-height:52px;
 }
@@ -3556,10 +3573,17 @@ const TaskCard = ({ task, state, locked, index }) => {
 const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpgrade, onSubmit, onClearPending, onUpgradeDismiss, variant }) => {
   const isHero = variant === 'hero';
   const [text, setText] = React.useState('');
+  const [flash, setFlash] = React.useState(false);
   const fromChat = !!pendingPrompt;
+  const composerRef = React.useRef(null);
 
   React.useEffect(() => {
-    if (pendingPrompt) setText(pendingPrompt);
+    if (!pendingPrompt) return;
+    setText(pendingPrompt);
+    setFlash(true);
+    composerRef.current?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const t = setTimeout(() => setFlash(false), 2400);
+    return () => clearTimeout(t);
   }, [pendingPrompt]);
 
   const submit = () => {
@@ -3599,7 +3623,7 @@ const CoworkComposer = ({ locked, runningTask, pendingPrompt, remaining, showUpg
         </div>
       )}
 
-      <div className={`cw-composer ${locked ? 'is-locked' : ''} ${isHero ? 'is-hero' : ''}`}>
+      <div ref={composerRef} className={`cw-composer ${locked ? 'is-locked' : ''} ${isHero ? 'is-hero' : ''} ${flash ? 'is-flash' : ''}`}>
         <textarea
           className="cw-composer-textarea"
           value={text}
