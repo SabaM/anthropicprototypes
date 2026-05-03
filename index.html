@@ -277,6 +277,38 @@
       if (injectorAbort) injectorAbort();
       injectorAbort = null;
       if (id === 1) injectorAbort = injectTourButton(frame);
+      if (id === 4) injectorAbort = neutralizeButtons(frame, [/^upgrade to pro$/i, /^fork to my workspace$/i]);
+    }
+
+    // Stop the listed buttons from doing anything when clicked — prototype-only
+    // affordance that should look real but not navigate / fork / pay.
+    function neutralizeButtons(frame, patterns) {
+      let cancelled = false;
+      const seen = new WeakSet();
+      const start = Date.now();
+      function attach(doc) {
+        if (!doc || !doc.body) return;
+        const buttons = doc.querySelectorAll('button, a[role="button"], a');
+        buttons.forEach(b => {
+          if (seen.has(b)) return;
+          const txt = (b.textContent || '').trim();
+          if (!patterns.some(re => re.test(txt))) return;
+          seen.add(b);
+          b.addEventListener('click', e => {
+            e.preventDefault();
+            e.stopImmediatePropagation();
+          }, true);
+          // Also strip href so middle-click / right-click don't navigate
+          if (b.tagName === 'A') b.removeAttribute('href');
+        });
+      }
+      const tick = setInterval(() => {
+        if (cancelled || Date.now() - start > 30000) { clearInterval(tick); return; }
+        let doc;
+        try { doc = frame.contentDocument; } catch { return; }
+        attach(doc);
+      }, 250);
+      return () => { cancelled = true; clearInterval(tick); };
     }
 
     function injectTourButton(frame) {
