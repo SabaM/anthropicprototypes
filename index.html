@@ -214,11 +214,16 @@
 
   <script>
     const PROTOTYPES = [
-      { id: 1, defaultName: "(Tasteful) Upgrade Awareness", size: "Small",  file: "prototypes/prototype-1.html" },
-      { id: 2, defaultName: "Value-First Sign Up",          size: "Small",  file: "prototypes/prototype-2.html" },
-      { id: 3, defaultName: "Cowork on Free Tier",          size: "Medium", file: "prototypes/prototype-3.html" },
-      { id: 4, defaultName: "Claude Sessions",              size: "Big",    file: "prototypes/prototype-4.html" },
+      { id: 1, defaultName: "Value-First Sign Up", size: "Small",  file: "prototypes/prototype-2.html" },
+      { id: 2, defaultName: "Cowork on Free Tier", size: "Medium", file: "prototypes/prototype-3.html" },
+      { id: 3, defaultName: "Claude Sessions",     size: "Big",    file: "prototypes/prototype-4.html" },
     ];
+    // Hidden prototypes — not shown in the grid. Open with the URL hash:
+    //   /#p=tasteful  → (Tasteful) Upgrade Awareness
+    const HIDDEN_PROTOTYPES = [
+      { id: "tasteful", defaultName: "(Tasteful) Upgrade Awareness", size: "Small", file: "prototypes/prototype-1.html" },
+    ];
+    const ALL_PROTOTYPES = PROTOTYPES.concat(HIDDEN_PROTOTYPES);
     // One-time cleanup of legacy localStorage entries from when names were editable.
     try { localStorage.removeItem("prototype-names-v1"); } catch {}
 
@@ -262,10 +267,11 @@
     let injectorAbort = null;
 
     function openPrototype(id) {
-      const p = PROTOTYPES.find(x => x.id === id);
+      const p = ALL_PROTOTYPES.find(x => x.id === id);
       if (!p || !p.file) return;
       currentId = id;
-      document.getElementById("vw-num").textContent = `Bet ${p.id}${p.size ? ` — ${p.size}` : ""}`;
+      const numLabel = typeof p.id === "number" ? `Bet ${p.id}` : "Hidden";
+      document.getElementById("vw-num").textContent = `${numLabel}${p.size ? ` — ${p.size}` : ""}`;
       document.getElementById("vw-name").textContent = p.defaultName;
       const frame = document.getElementById("frame");
       frame.src = p.file;
@@ -276,8 +282,8 @@
       // Per-prototype iframe customizations
       if (injectorAbort) injectorAbort();
       injectorAbort = null;
-      if (id === 1) injectorAbort = injectTourButton(frame);
-      if (id === 4) injectorAbort = neutralizeButtons(frame, [/^upgrade to pro$/i, /^fork to my workspace$/i]);
+      if (id === "tasteful") injectorAbort = injectTourButton(frame);
+      if (id === 3)         injectorAbort = neutralizeButtons(frame, [/^upgrade to pro$/i, /^fork to my workspace$/i]);
     }
 
     // Stop the listed buttons from doing anything when clicked — prototype-only
@@ -388,15 +394,15 @@ document.addEventListener("keydown", e => {
 
     // Restore from hash on load
     function fromHash() {
-      const m = location.hash.match(/p=(\d+)/);
-      if (m) openPrototype(+m[1]);
+      const m = location.hash.match(/p=([\w-]+)/);
+      if (m) openPrototype(/^\d+$/.test(m[1]) ? +m[1] : m[1]);
     }
 
     renderGrid();
     fromHash();
     window.addEventListener("hashchange", () => {
-      const m = location.hash.match(/p=(\d+)/);
-      if (m) openPrototype(+m[1]);
+      const m = location.hash.match(/p=([\w-]+)/);
+      if (m) openPrototype(/^\d+$/.test(m[1]) ? +m[1] : m[1]);
       else goHome();
     });
   </script>
