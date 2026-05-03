@@ -99,7 +99,7 @@
 
   <script>
     const VARIANTS = {
-      a: { src: "prototype-2-a.html", isolate: null },
+      a: { src: "prototype-2-a.html", isolate: null, customize: "a-fix-sidebar" },
       b: { src: "prototype-2-b.html", isolate: { label: "C · Marketing hero" } },
     };
     const STORAGE_KEY = "prototype-2-variant";
@@ -126,7 +126,47 @@
       requestAnimationFrame(() => {
         frame.src = cfg.src;
         if (cfg.isolate) attachIsolator(frame, cfg.isolate.label);
+        if (cfg.customize === "a-fix-sidebar") attachVariantAFix(frame);
       });
+    }
+
+    // Variant A bug: 'Write' tab has 3 prompt cards that overflow viewport,
+    // pushing the body scroll down and dragging the static-positioned sidebar
+    // (with the Sign in to save chats button) below the fold. Inject CSS that
+    // anchors the sidebar so it stays in viewport regardless of content height.
+    function attachVariantAFix(frame) {
+      let injected = false;
+      let lastDoc = null;
+      const start = Date.now();
+      const tick = setInterval(() => {
+        if (Date.now() - start > 30000) { clearInterval(tick); return; }
+        let doc;
+        try { doc = frame.contentDocument; } catch { return; }
+        if (!doc || !doc.body) return;
+        if (doc !== lastDoc) { lastDoc = doc; injected = false; }
+        if (injected) return;
+        const aside = doc.querySelector('aside');
+        if (!aside) return;
+        if (!doc.getElementById('__pin-sidebar-style')) {
+          const style = doc.createElement('style');
+          style.id = '__pin-sidebar-style';
+          style.textContent = `
+            html, body { height: 100% !important; overflow: hidden !important; }
+            aside {
+              position: sticky !important;
+              top: 0 !important;
+              align-self: flex-start !important;
+              max-height: 100vh !important;
+              overflow-y: auto !important;
+            }
+            main { max-height: 100vh; overflow-y: auto; }
+          `;
+          (doc.head || doc.documentElement).appendChild(style);
+        }
+        injected = true;
+        clearInterval(tick);
+      }, 150);
+      frame.addEventListener('load', () => { injected = false; lastDoc = null; }, { once: false });
     }
 
     // Watch the iframe document for the target artboard, then isolate it.
