@@ -224,7 +224,7 @@
   <script>
     const PROTOTYPES = [
       { id: 1, defaultName: "(Tasteful) Upgrade Awareness", file: "prototypes/prototype-1.html" },
-      { id: 2, defaultName: "Value-first sign up", file: "prototypes/prototype-2.html" },
+      { id: 2, defaultName: "Value First Sign Up", file: "prototypes/prototype-2.html" },
       { id: 3, defaultName: "Cowork on Free Tier", file: "prototypes/prototype-3.html" },
       { id: 4, defaultName: "Claude Sessions", file: "prototypes/prototype-4.html" },
     ];
@@ -239,7 +239,7 @@
       let dirty = false;
       if (all[4] === "Claude Rooms") { delete all[4]; dirty = true; }
       if (all[1] === "Trio Upgrade" || all[1] === "(Tasteful) Trio upgrade") { delete all[1]; dirty = true; }
-      if (all[2] === "Logged-out Experience") { delete all[2]; dirty = true; }
+      if (all[2] === "Logged-out Experience" || all[2] === "Value-first sign up") { delete all[2]; dirty = true; }
       if (dirty) localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
     })();
     function saveName(id, name) {
