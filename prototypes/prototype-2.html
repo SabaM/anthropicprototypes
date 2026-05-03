@@ -215,6 +215,10 @@
             main { max-height: 100vh; overflow-y: auto; }
             /* Tighten the inner content wrapper which had 10vh top padding */
             main div[style*="padding: 10vh"] { padding-top: 24px !important; }
+            /* Sticky children inside main were offset top:56px (to clear the
+               page header). Now that main is its own scroll container, that
+               offset doubles the gap — flatten it. */
+            main > div[style*="position: sticky"][style*="top: 56px"] { top: 0 !important; }
           `;
           (doc.head || doc.documentElement).appendChild(style);
           cssInjected = true;
