@@ -223,8 +223,8 @@
 
   <script>
     const PROTOTYPES = [
-      { id: 1, defaultName: "(Tasteful) Trio upgrade", file: "prototypes/prototype-1.html" },
-      { id: 2, defaultName: "Logged-out Experience", file: "prototypes/prototype-2.html" },
+      { id: 1, defaultName: "(Tasteful) Upgrade Awareness", file: "prototypes/prototype-1.html" },
+      { id: 2, defaultName: "Value-first sign up", file: "prototypes/prototype-2.html" },
       { id: 3, defaultName: "Cowork on Free Tier", file: "prototypes/prototype-3.html" },
       { id: 4, defaultName: "Claude Sessions", file: "prototypes/prototype-4.html" },
     ];
@@ -238,7 +238,8 @@
       const all = loadNames();
       let dirty = false;
       if (all[4] === "Claude Rooms") { delete all[4]; dirty = true; }
-      if (all[1] === "Trio Upgrade") { delete all[1]; dirty = true; }
+      if (all[1] === "Trio Upgrade" || all[1] === "(Tasteful) Trio upgrade") { delete all[1]; dirty = true; }
+      if (all[2] === "Logged-out Experience") { delete all[2]; dirty = true; }
       if (dirty) localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
     })();
     function saveName(id, name) {
@@ -271,7 +272,7 @@
           buttonHTML = `<button class="btn primary" data-action="open" data-id="${p.id}">${currentId ? 'Switch' : 'Open'}</button>`;
         }
         card.innerHTML = `
-          <div class="num">Prototype ${p.id}</div>
+          <div class="num">Bet ${p.id}</div>
           <input class="name-input" type="text" value="${escapeHtml(name)}" placeholder="${escapeHtml(p.defaultName)}" data-id="${p.id}" />
           <div class="actions">${buttonHTML}</div>
         `;
@@ -302,7 +303,7 @@
       if (input) saveName(id, input.value);
 
       currentId = id;
-      document.getElementById("vw-num").textContent = `Prototype ${p.id}`;
+      document.getElementById("vw-num").textContent = `Bet ${p.id}`;
       document.getElementById("vw-name").textContent = nameFor(p);
       document.getElementById("frame").src = p.file;
       document.body.classList.add("viewing");
