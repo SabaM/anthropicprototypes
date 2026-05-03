@@ -130,24 +130,77 @@
       });
     }
 
-    // Variant A bug: 'Write' tab has 3 prompt cards that overflow viewport,
-    // pushing the body scroll down and dragging the static-positioned sidebar
-    // (with the Sign in to save chats button) below the fold. Inject CSS that
-    // anchors the sidebar so it stays in viewport regardless of content height.
+    // Variant A customizations:
+    //  1. Pin the sidebar so the 'Sign in' button doesn't shift between mode tabs
+    //     (Write has 3 prompts vs Analyze's 2, body overflows on Write).
+    //  2. Hide all message-gate copy ('You're X message into your free preview',
+    //     'X messages left', the 'Free preview' badge, etc.) — pretend there
+    //     is no message limit.
     function attachVariantAFix(frame) {
-      let injected = false;
+      let cssInjected = false;
       let lastDoc = null;
+      let observer = null;
+
+      // Patterns whose containing pill/banner should be hidden entirely.
+      const HIDE_PATTERNS = [
+        /you'?re\s+\d+\s+messages?\s+into\s+your\s+free\s+preview/i,
+        /\d+\s+messages?\s+left/i,
+        /messages?\s+left\s+in\s+free\s+preview/i,
+        /^\s*Free preview\s*$/i,
+      ];
+      // Patterns that should have the matched fragment stripped from the text.
+      const STRIP_PREFIXES = [
+        /^\s*Free preview\s*[·•|]\s*/i,
+        /\s*[·•|]\s*Free preview\s*$/i,
+        /\s*[·•|]\s*No sign-up to try\s*/i,
+      ];
+
+      function processGateCopy(doc) {
+        const w = doc.createTreeWalker(doc.body, NodeFilter.SHOW_TEXT, {
+          acceptNode(node) {
+            const p = node.parentElement;
+            if (!p) return NodeFilter.FILTER_REJECT;
+            const tag = p.tagName;
+            if (tag === 'SCRIPT' || tag === 'STYLE') return NodeFilter.FILTER_REJECT;
+            return NodeFilter.FILTER_ACCEPT;
+          },
+        });
+        let n;
+        while (n = w.nextNode()) {
+          const txt = (n.nodeValue || '');
+          if (!txt.trim()) continue;
+          // For HIDE patterns: hide *only* the direct parent element (a span,
+          // pill, banner — never climb, that risks taking out the whole nav).
+          if (HIDE_PATTERNS.some(re => re.test(txt.trim()))) {
+            const p = n.parentElement;
+            if (p && p.dataset.__gateHidden !== '1') {
+              p.dataset.__gateHidden = '1';
+              p.style.setProperty('display', 'none', 'important');
+            }
+            continue;
+          }
+          // For STRIP patterns: rewrite the text node in place. Never hide.
+          let next = txt;
+          for (const re of STRIP_PREFIXES) next = next.replace(re, '');
+          next = next.replace(/^\s*[·•|]\s*/, '').replace(/\s*[·•|]\s*$/, '');
+          if (next !== txt) n.nodeValue = next;
+        }
+      }
+
       const start = Date.now();
       const tick = setInterval(() => {
         if (Date.now() - start > 30000) { clearInterval(tick); return; }
         let doc;
         try { doc = frame.contentDocument; } catch { return; }
         if (!doc || !doc.body) return;
-        if (doc !== lastDoc) { lastDoc = doc; injected = false; }
-        if (injected) return;
+        if (doc !== lastDoc) {
+          lastDoc = doc;
+          cssInjected = false;
+          if (observer) { observer.disconnect(); observer = null; }
+        }
         const aside = doc.querySelector('aside');
         if (!aside) return;
-        if (!doc.getElementById('__pin-sidebar-style')) {
+        if (!cssInjected && !doc.getElementById('__pin-sidebar-style')) {
           const style = doc.createElement('style');
           style.id = '__pin-sidebar-style';
           style.textContent = `
@@ -162,11 +215,20 @@
             main { max-height: 100vh; overflow-y: auto; }
           `;
           (doc.head || doc.documentElement).appendChild(style);
+          cssInjected = true;
         }
-        injected = true;
-        clearInterval(tick);
-      }, 150);
-      frame.addEventListener('load', () => { injected = false; lastDoc = null; }, { once: false });
+        // Initial hide pass + observe for React re-renders
+        if (!observer) {
+          processGateCopy(doc);
+          observer = new MutationObserver(() => processGateCopy(doc));
+          observer.observe(doc.body, { childList: true, subtree: true, characterData: true });
+        }
+      }, 250);
+      frame.addEventListener('load', () => {
+        cssInjected = false;
+        lastDoc = null;
+        if (observer) { observer.disconnect(); observer = null; }
+      }, { once: false });
     }
 
     // Watch the iframe document for the target artboard, then isolate it.
