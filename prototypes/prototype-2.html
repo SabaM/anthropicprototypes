@@ -141,14 +141,18 @@
       let lastDoc = null;
       let observer = null;
 
-      // Patterns whose containing pill/banner should be hidden entirely.
-      const HIDE_PATTERNS = [
+      // Standalone 'Free preview' badge (just the word) — hide; the longer
+      // copy below handles intent.
+      const BADGE_HIDE = /^Free preview$/i;
+      // Patterns whose text should be REWRITTEN to the new gate message.
+      const GATE_REWRITE_TARGET = 'Used up messages — sign in for unlimited';
+      const GATE_REWRITE_PATTERNS = [
         /you'?re\s+\d+\s+messages?\s+into\s+your\s+free\s+preview/i,
         /\d+\s+messages?\s+left/i,
         /messages?\s+left\s+in\s+free\s+preview/i,
-        /^\s*Free preview\s*$/i,
       ];
-      // Patterns that should have the matched fragment stripped from the text.
+      // Sub-text fragments to strip from compound subtitles
+      // (e.g., 'Free preview · Sonnet 4.5 · No sign-up to try' → 'Sonnet 4.5').
       const STRIP_PREFIXES = [
         /^\s*Free preview\s*[·•|]\s*/i,
         /\s*[·•|]\s*Free preview\s*$/i,
@@ -168,10 +172,11 @@
         let n;
         while (n = w.nextNode()) {
           const txt = (n.nodeValue || '');
-          if (!txt.trim()) continue;
-          // For HIDE patterns: hide *only* the direct parent element (a span,
-          // pill, banner — never climb, that risks taking out the whole nav).
-          if (HIDE_PATTERNS.some(re => re.test(txt.trim()))) {
+          const trimmed = txt.trim();
+          if (!trimmed) continue;
+
+          // Hide the standalone 'Free preview' badge.
+          if (BADGE_HIDE.test(trimmed)) {
             const p = n.parentElement;
             if (p && p.dataset.__gateHidden !== '1') {
               p.dataset.__gateHidden = '1';
@@ -179,7 +184,19 @@
             }
             continue;
           }
-          // For STRIP patterns: rewrite the text node in place. Never hide.
+
+          // Rewrite gate-state copy to the new message + un-hide if previously hidden.
+          if (GATE_REWRITE_PATTERNS.some(re => re.test(trimmed))) {
+            const p = n.parentElement;
+            if (p && p.dataset.__gateHidden === '1') {
+              delete p.dataset.__gateHidden;
+              p.style.removeProperty('display');
+            }
+            if (trimmed !== GATE_REWRITE_TARGET) n.nodeValue = GATE_REWRITE_TARGET;
+            continue;
+          }
+
+          // Strip 'Free preview ·' / '· No sign-up to try' from compound text.
           let next = txt;
           for (const re of STRIP_PREFIXES) next = next.replace(re, '');
           next = next.replace(/^\s*[·•|]\s*/, '').replace(/\s*[·•|]\s*$/, '');
@@ -357,9 +374,10 @@
         if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeSignIn(doc);
       });
 
-      // Wire 'Sign in to save chats' button — capture phase so we win against
-      // any underlying handler.
-      doc.body.addEventListener('click', e => {
+      // Wire 'Sign in to save chats' button — listen on the *document* in
+      // capture phase so we run before React's delegated handlers, which
+      // would otherwise open the built-in file-upload modal.
+      doc.addEventListener('click', e => {
         const btn = e.target.closest && e.target.closest('button');
         if (!btn) return;
         const txt = (btn.textContent || '').trim();
@@ -373,6 +391,32 @@
           });
         }
       }, true);
+      // Belt-and-suspenders: if the built-in file modal still slips through
+      // (timing race), close it and open ours instead.
+      const dialogObserver = new MutationObserver(() => {
+        const allText = doc.body.textContent || '';
+        if (!/sign in to share files with claude/i.test(allText)) return;
+        // Find dialog-ish container
+        const candidates = [...doc.querySelectorAll('[role="dialog"], div')]
+          .filter(el => /sign in to share files with claude/i.test(el.textContent || '') && el.children.length >= 1)
+          .sort((a, b) => a.textContent.length - b.textContent.length);
+        const dialog = candidates[0];
+        if (!dialog) return;
+        // Walk up to the modal root (overlay) and remove it
+        let root = dialog;
+        for (let i = 0; i < 6 && root.parentElement; i++) {
+          const cs = doc.defaultView.getComputedStyle(root);
+          if (cs.position === 'fixed' || cs.position === 'absolute') break;
+          root = root.parentElement;
+        }
+        root.remove();
+        openSignIn(doc, {
+          eyebrow: 'SAVE YOUR CHATS',
+          title: 'Sign up to save chat',
+          sub: "Your conversations are gone the moment you close this tab. Sign up to keep them around — free, no card required.",
+        });
+      });
+      dialogObserver.observe(doc.body, { childList: true, subtree: true });
     }
     function openSignIn(doc, copy) {
       const ov = doc.getElementById('__signin-overlay');
