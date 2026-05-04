@@ -226,7 +226,13 @@
         // Initial hide pass + observe for React re-renders
         if (!observer) {
           processGateCopy(doc);
-          observer = new MutationObserver(() => processGateCopy(doc));
+          installSignInModal(doc);
+          installSendCounter(doc);
+          observer = new MutationObserver(() => {
+            processGateCopy(doc);
+            installSignInModal(doc);
+            installSendCounter(doc);
+          });
           observer.observe(doc.body, { childList: true, subtree: true, characterData: true });
         }
       }, 250);
@@ -235,6 +241,198 @@
         lastDoc = null;
         if (observer) { observer.disconnect(); observer = null; }
       }, { once: false });
+    }
+
+    // Inject a custom sign-in modal + wire it up to:
+    //   - the 'Sign in to save chats' button (copy: 'Sign up to save chat')
+    //   - the 3rd send attempt (copy: 'Sign in to keep chatting')
+    function installSignInModal(doc) {
+      if (doc.getElementById('__signin-style')) return; // once
+      const style = doc.createElement('style');
+      style.id = '__signin-style';
+      style.textContent = `
+        .__signin-overlay {
+          position: fixed; inset: 0; z-index: 999999;
+          background: rgba(20, 18, 14, 0.55);
+          backdrop-filter: blur(4px);
+          display: none; align-items: center; justify-content: center;
+          padding: 24px; font-family: var(--font-ui, -apple-system, BlinkMacSystemFont, sans-serif);
+        }
+        .__signin-overlay.is-open { display: flex; }
+        .__signin-card {
+          background: #faf6ec;
+          border-radius: 16px;
+          max-width: 460px; width: 100%;
+          box-shadow: 0 20px 60px -10px rgba(0,0,0,0.3);
+          overflow: hidden;
+        }
+        .__signin-card-illust {
+          background: #f1ead8;
+          padding: 28px 24px;
+          display: flex; align-items: center; justify-content: center;
+        }
+        .__signin-card-illust .__chip {
+          background: #fff;
+          border: 2px dashed #d97757;
+          border-radius: 10px;
+          padding: 18px 28px;
+          color: #d97757;
+        }
+        .__signin-card-body { padding: 22px 26px 18px; }
+        .__signin-card-eyebrow {
+          font-size: 11px; font-weight: 700; letter-spacing: 0.08em;
+          text-transform: uppercase; color: #d97757; margin-bottom: 10px;
+        }
+        .__signin-card-title {
+          font-family: 'Source Serif Pro', Georgia, serif;
+          font-size: 26px; font-weight: 600; color: #2b2825; margin-bottom: 10px;
+          line-height: 1.2;
+        }
+        .__signin-card-sub {
+          font-size: 14px; color: #6b6760; line-height: 1.5; margin-bottom: 22px;
+        }
+        .__signin-card-btns { display: flex; flex-direction: column; gap: 10px; }
+        .__signin-card-btn {
+          width: 100%; padding: 12px 16px; border-radius: 10px;
+          font-family: inherit; font-size: 14px; font-weight: 500;
+          cursor: pointer; border: 1px solid #d8d2c2; background: #fff; color: #2b2825;
+          display: inline-flex; align-items: center; justify-content: center; gap: 10px;
+        }
+        .__signin-card-btn.is-primary {
+          background: #1c1916; color: #fff; border-color: #1c1916; font-weight: 600;
+        }
+        .__signin-card-btn:hover { filter: brightness(1.03); }
+        .__signin-card-foot {
+          display: flex; align-items: center; justify-content: space-between;
+          padding: 14px 26px 18px; border-top: 1px solid #ece4d3;
+          font-size: 13px; color: #6b6760;
+        }
+        .__signin-card-foot a { color: #d97757; font-weight: 600; cursor: pointer; }
+        .__signin-card-foot button {
+          background: none; border: none; color: #6b6760; cursor: pointer;
+          font: inherit;
+        }
+        .__signin-card-foot button:hover { color: #2b2825; }
+      `;
+      (doc.head || doc.documentElement).appendChild(style);
+
+      const overlay = doc.createElement('div');
+      overlay.className = '__signin-overlay';
+      overlay.id = '__signin-overlay';
+      overlay.innerHTML = `
+        <div class="__signin-card" role="dialog" aria-modal="true">
+          <div class="__signin-card-illust">
+            <div class="__chip">
+              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><path d="M12 5v14"/></svg>
+            </div>
+          </div>
+          <div class="__signin-card-body">
+            <div class="__signin-card-eyebrow" id="__signin-eyebrow"></div>
+            <div class="__signin-card-title" id="__signin-title"></div>
+            <div class="__signin-card-sub" id="__signin-sub"></div>
+            <div class="__signin-card-btns">
+              <button class="__signin-card-btn">
+                <svg width="18" height="18" viewBox="0 0 24 24"><path fill="#4285F4" d="M22.6 12.2c0-.78-.07-1.53-.2-2.25H12v4.26h5.94c-.26 1.37-1.04 2.53-2.21 3.31v2.75h3.57c2.08-1.92 3.3-4.74 3.3-8.07z"/><path fill="#34A853" d="M12 23c2.97 0 5.46-.98 7.28-2.66l-3.57-2.75c-.99.66-2.25 1.06-3.71 1.06-2.86 0-5.28-1.93-6.15-4.53H2.18v2.84A11 11 0 0 0 12 23z"/><path fill="#FBBC05" d="M5.85 14.12A6.6 6.6 0 0 1 5.5 12c0-.74.13-1.45.35-2.12V7.04H2.18A11 11 0 0 0 1 12c0 1.78.43 3.46 1.18 4.96l3.67-2.84z"/><path fill="#EA4335" d="M12 5.38c1.62 0 3.06.56 4.21 1.64l3.15-3.15C17.45 2.09 14.97 1 12 1A11 11 0 0 0 2.18 7.04l3.67 2.84C6.72 7.31 9.14 5.38 12 5.38z"/></svg>
+                Continue with Google
+              </button>
+              <button class="__signin-card-btn is-primary">
+                Continue with email · It's free
+              </button>
+            </div>
+          </div>
+          <div class="__signin-card-foot">
+            <span>Already have an account? <a>Log in</a></span>
+            <button id="__signin-dismiss">Maybe later</button>
+          </div>
+        </div>
+      `;
+      doc.body.appendChild(overlay);
+
+      // Wire dismissal
+      overlay.addEventListener('click', e => {
+        if (e.target === overlay) closeSignIn(doc);
+      });
+      overlay.querySelector('#__signin-dismiss').addEventListener('click', () => closeSignIn(doc));
+      doc.addEventListener('keydown', e => {
+        if (e.key === 'Escape' && overlay.classList.contains('is-open')) closeSignIn(doc);
+      });
+
+      // Wire 'Sign in to save chats' button — capture phase so we win against
+      // any underlying handler.
+      doc.body.addEventListener('click', e => {
+        const btn = e.target.closest && e.target.closest('button');
+        if (!btn) return;
+        const txt = (btn.textContent || '').trim();
+        if (/^sign in to save chats$/i.test(txt)) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          openSignIn(doc, {
+            eyebrow: 'SAVE YOUR CHATS',
+            title: 'Sign up to save chat',
+            sub: "Your conversations are gone the moment you close this tab. Sign up to keep them around — free, no card required.",
+          });
+        }
+      }, true);
+    }
+    function openSignIn(doc, copy) {
+      const ov = doc.getElementById('__signin-overlay');
+      if (!ov) return;
+      doc.getElementById('__signin-eyebrow').textContent = copy.eyebrow;
+      doc.getElementById('__signin-title').textContent = copy.title;
+      doc.getElementById('__signin-sub').textContent = copy.sub;
+      ov.classList.add('is-open');
+    }
+    function closeSignIn(doc) {
+      const ov = doc.getElementById('__signin-overlay');
+      if (ov) ov.classList.remove('is-open');
+    }
+
+    // Track sends. After 2 messages, intercept the 3rd send and open the modal.
+    function installSendCounter(doc) {
+      if (doc.body.dataset.__sendCounterInstalled === '1') return;
+      doc.body.dataset.__sendCounterInstalled = '1';
+      let sentCount = 0;
+      const LIMIT = 2;
+
+      function maybeBlock(e) {
+        if (sentCount < LIMIT) {
+          sentCount += 1;
+          return false; // allow
+        }
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        openSignIn(doc, {
+          eyebrow: 'KEEP THE CONVERSATION GOING',
+          title: 'Sign in to keep chatting',
+          sub: "You've sent " + LIMIT + " messages. Sign in to keep chatting and save this thread to your account.",
+        });
+        return true;
+      }
+
+      // Intercept Enter on the textarea (without shift)
+      doc.body.addEventListener('keydown', e => {
+        if (e.key !== 'Enter' || e.shiftKey) return;
+        const ta = e.target;
+        if (!(ta instanceof doc.defaultView.HTMLTextAreaElement)) return;
+        if (!ta.value || !ta.value.trim()) return;
+        maybeBlock(e);
+      }, true);
+
+      // Intercept clicks on the send button (the up-arrow next to the composer)
+      doc.body.addEventListener('click', e => {
+        const btn = e.target.closest && e.target.closest('button');
+        if (!btn) return;
+        // Heuristic: send buttons typically have an aria-label like 'Send' or a
+        // small SVG with up-arrow path; they sit inside a composer wrapper.
+        const label = (btn.getAttribute('aria-label') || '').toLowerCase();
+        const inComposer = btn.closest('form, [class*="composer"], [class*="textarea"]');
+        const looksLikeSend = label === 'send' || (inComposer && btn.querySelector('svg'));
+        if (!looksLikeSend) return;
+        // Make sure there's text in the nearest textarea
+        const ta = (inComposer || doc).querySelector('textarea');
+        if (!ta || !ta.value || !ta.value.trim()) return;
+        maybeBlock(e);
+      }, true);
     }
 
     // Watch the iframe document for the target artboard, then isolate it.
