@@ -236,6 +236,9 @@
                page header). Now that main is its own scroll container, that
                offset doubles the gap — flatten it. */
             main > div[style*="position: sticky"][style*="top: 56px"] { top: 0 !important; }
+            /* Cap each category's sub-prompts at 2 (grid is 2 cols, so the
+               3rd/4th cards drop the second row entirely). */
+            main div[style*="grid-template-columns: 1fr 1fr"] > button:nth-child(n+3) { display: none !important; }
           `;
           (doc.head || doc.documentElement).appendChild(style);
           cssInjected = true;
@@ -388,6 +391,32 @@
             eyebrow: 'SAVE YOUR CHATS',
             title: 'Sign up to save chat',
             sub: "Your conversations are gone the moment you close this tab. Sign up to keep them around — free, no card required.",
+          });
+          return;
+        }
+        // Gate-bar / header 'Sign up free' and the built-in modal's
+        // 'Sign up to keep going' both route to our modal. Letting the
+        // built-in dialog open races with our processGateCopy mutations
+        // and triggers a NotFoundError in React.
+        if (/^sign up free$/i.test(txt) || /^sign up to keep going$/i.test(txt)) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          openSignIn(doc, {
+            eyebrow: 'KEEP THE CONVERSATION GOING',
+            title: 'Sign in to keep chatting',
+            sub: "Sign in to keep chatting and save this thread to your account — free, no card required.",
+          });
+          return;
+        }
+        // Attach (paperclip) button in the composer — no real file picker
+        // in this preview; route to the sign-in modal.
+        if (btn.getAttribute('title') === 'Attach files') {
+          e.preventDefault();
+          e.stopImmediatePropagation();
+          openSignIn(doc, {
+            eyebrow: 'ATTACHMENTS',
+            title: 'Sign in to attach your files',
+            sub: "Bring in PDFs, images, and code files so Claude can ground its answers in your context — free, no card required.",
           });
         }
       }, true);
